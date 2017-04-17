@@ -1,5 +1,8 @@
 package ru.chirikhin.oracle_client.main
 
-fun main(args: Array<String>) {
+import ru.chirikhin.oracle_client.view.LoginView
+import tornadofx.App
 
+class Main : App() {
+    override val primaryView = LoginView::class
 }
