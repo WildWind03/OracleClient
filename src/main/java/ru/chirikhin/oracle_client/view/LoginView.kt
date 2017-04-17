@@ -1,7 +1,12 @@
 package ru.chirikhin.oracle_client.view
 
+import javafx.scene.control.Button
+import javafx.scene.control.PasswordField
+import javafx.scene.control.TextField
 import javafx.scene.layout.FlowPane
 import tornadofx.*
+import java.util.regex.Pattern
+
 
 class LoginView : View() {
     private val APP_NAME = "Oracle Client"
@@ -16,6 +21,18 @@ class LoginView : View() {
     private val HEIGHT = 280;
     private val WIDTH = 340;
 
+    private val signInButton = Button(SIGN_IN)
+    private val ipTextField = TextField()
+    private val portTextField = TextField()
+    private val usernameTextField = TextField()
+    private val passwordTextField = PasswordField()
+
+    private var isIpValid = false
+    private var isPortValid = false
+    private var isUsernameValid = false
+    private var isPasswordValid = false
+
+
     init {
         title = APP_NAME
         with(primaryStage) {
@@ -25,32 +42,64 @@ class LoginView : View() {
             maxWidth = WIDTH.toDouble();
         }
 
-        with (root) {
+        val ipPattern = Pattern.compile(getIpRegex())
+        val portPattern = Pattern.compile(getPortRegex())
+        with(root) {
             form {
                 fieldset {
                     field(IP) {
-                        textfield { }
+                        add(ipTextField);
+
+                        ipTextField.apply {
+                            textProperty().addListener { observable, oldValue, newValue ->
+                                val ipMather = ipPattern.matcher(newValue)
+                                isIpValid = ipMather.matches()
+                                updateSignInEnabledState()
+                            }
+                        }
                     }
 
                     field(PORT) {
-                        textfield { }
+                        add(portTextField)
+
+                        portTextField.apply {
+                            textProperty().addListener { observable, oldValue, newValue ->
+                                val portMather = portPattern.matcher(newValue)
+                                isPortValid = portMather.matches()
+                                updateSignInEnabledState()
+                            }
+                        }
                     }
 
                     field(USERNAME) {
-                        textfield { }
+                        add(usernameTextField)
+
+                        usernameTextField.apply {
+                            textProperty().addListener { observable, oldValue, newValue ->
+                                isUsernameValid = !newValue.isEmpty()
+                                updateSignInEnabledState()
+                            }
+                        }
                     }
 
                     field(PASSWORD) {
-                        passwordfield { }
+                        add(passwordTextField.apply {
+                            textProperty().addListener { observable, oldValue, newValue ->
+                                isPasswordValid = !newValue.isEmpty()
+                                updateSignInEnabledState()
+                            }
+                        })
                     }
                 }
 
-                button(SIGN_IN) { }
+                signInButton.disableProperty().set(true)
+                add(signInButton);
             }
+
         }
     }
 
-    fun signIn() {
-
+    private fun updateSignInEnabledState() {
+        signInButton.disableProperty().set(!(isIpValid && isPasswordValid && isPortValid && isUsernameValid))
     }
 }
