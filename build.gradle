@@ -1,0 +1,37 @@
+group 'ru.chirikhin'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+repositories{
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class' : 'ru.chirikhin.chattree.Main'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+    compile 'apache-log4j:log4j:1.2.15'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'junit:junit:4.7'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+}
+
+buildscript {
+    ext.kotlin_version = '1.1.1'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
