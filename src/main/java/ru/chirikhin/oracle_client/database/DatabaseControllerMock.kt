@@ -31,8 +31,11 @@ class DatabaseControllerMock : IDatabaseController() {
         return listOf("USER", "SYSTEM")
     }
 
-    override fun getTableNames(tablespace: String): List<String> {
-        return listOf("SCHOOL", "TEACHER")
+    override fun getTableNames(tablespace: String): List<String>? {
+        when (tablespace) {
+            "USER" -> return listOf("SCHOOL", "TEACHER")
+        }
+        return null;
     }
 
     override fun connect(ip: String, port: String, username: String, password: String) {

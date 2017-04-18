@@ -1,9 +1,9 @@
 package ru.chirikhin.oracle_client.view
 
+import javafx.geometry.Pos
 import javafx.scene.control.Button
 import javafx.scene.control.PasswordField
 import javafx.scene.control.TextField
-import javafx.scene.layout.BorderPane
 import javafx.scene.layout.FlowPane
 import ru.chirikhin.oracle_client.util.getIpRegex
 import ru.chirikhin.oracle_client.util.getPortRegex
@@ -12,9 +12,9 @@ import java.util.regex.Pattern
 
 
 class LoginView : View() {
-    private val APP_NAME = "Oracle Client"
+    private val APP_NAME = "Oracle Client: Authorization"
 
-    override val root = BorderPane()
+    override val root = FlowPane()
 
     private val IP_DEFAULT = "127.0.0.1"
     private val PORT_DEFAULT = "12000"
@@ -35,10 +35,10 @@ class LoginView : View() {
     private val usernameTextField = TextField(USERNAME_DEFAULT)
     private val passwordTextField = PasswordField()
 
-    private var isIpValid = false
-    private var isPortValid = false
-    private var isUsernameValid = false
-    private var isPasswordValid = false
+    private var isIpValid = true
+    private var isPortValid = true
+    private var isUsernameValid = true
+    private var isPasswordValid = true
 
 
     init {
@@ -53,7 +53,9 @@ class LoginView : View() {
         val portPattern = Pattern.compile(getPortRegex())
 
         with(root) {
-            center = form {
+            alignmentProperty().value = Pos.CENTER
+             form {
+                alignmentProperty().value = Pos.CENTER
                 fieldset {
                     field(IP) {
                         add(ipTextField)

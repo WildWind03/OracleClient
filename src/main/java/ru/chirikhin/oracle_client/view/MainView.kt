@@ -12,10 +12,14 @@ class MainView : View() {
     var tableView: TableView<List<String>>? = null
     val databaseController = DatabaseControllerMock()
 
-    private val TABLES = "Tables"
+    private val MAIN_VIEW_TITLE = "Oracle Client"
+    private val TABLESPACES = "Tablespaces"
 
     init {
-        val tables = databaseController.getTableNames("Any");
+        title = MAIN_VIEW_TITLE
+        with(primaryStage) {
+            isMaximized = true
+        }
 
         with(root) {
             left = treeview<String> {
@@ -39,11 +43,19 @@ class MainView : View() {
 
                     center = tableView
                 }
-                root = TreeItem(TABLES)
 
-                root.children.apply {
-                    tables.forEach {
-                        add(TreeItem(it))
+                root = TreeItem(TABLESPACES)
+                val tablespaces = databaseController.getTablespaces()
+
+                for (tablespace in tablespaces) {
+                    val tablespaceItem = TreeItem(tablespace)
+                    root.children.add(tablespaceItem)
+
+                    val tables = databaseController.getTableNames(tablespace)
+                    tablespaceItem.children.apply {
+                        tables?.forEach {
+                            add(TreeItem(it))
+                        }
                     }
                 }
             }
