@@ -1,7 +1,7 @@
 package ru.chirikhin.oracle_client.database
 
 
-class DatabaseControllerMock : IDatabaseController() {
+object DatabaseControllerMock : IDatabaseController() {
     override fun getColumnNames(tablename: String): List<String>? {
         if (tablename == "SCHOOL") {
             return listOf("NUMBER", "ADDRESS", "TYPE")
