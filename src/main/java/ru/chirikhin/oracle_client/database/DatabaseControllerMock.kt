@@ -2,7 +2,7 @@ package ru.chirikhin.oracle_client.database
 
 
 class DatabaseControllerMock : IDatabaseController() {
-    override fun getColumnNames(tablename: String): List<String> {
+    override fun getColumnNames(tablename: String): List<String>? {
         if (tablename == "SCHOOL") {
             return listOf("NUMBER", "ADDRESS", "TYPE")
         }
@@ -11,7 +11,7 @@ class DatabaseControllerMock : IDatabaseController() {
             return listOf("ID", "NAME", "AGE")
         }
 
-        return listOf("ERROR");
+        return null
     }
 
     override fun getRecords(tablename: String): List<List<String>> {

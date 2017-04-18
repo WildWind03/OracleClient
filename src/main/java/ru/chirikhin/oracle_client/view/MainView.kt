@@ -21,17 +21,20 @@ class MainView : View() {
             left = treeview<String> {
                 selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
                     val treeItem = newValue
-                    tableView = TableView<List<String>>().apply {
-                        val types = databaseController.getColumnNames(treeItem.value)
-                        items = databaseController.getRecords(treeItem.value).observable()
+                    val types = databaseController.getColumnNames(treeItem.value)
 
-                        types.forEach(::println)
+                    if (null != types) {
+                        tableView = TableView<List<String>>().apply {
+                            items = databaseController.getRecords(treeItem.value).observable()
 
-                        for (k in 0..types.size - 1) {
-                            column<List<String>, String>(types[k]) {
-                                ReadOnlyObjectWrapper(it.value[k])
+                            for (k in 0..types.size - 1) {
+                                column<List<String>, String>(types[k]) {
+                                    ReadOnlyObjectWrapper(it.value[k])
+                                }
                             }
                         }
+                    } else {
+                        tableView = null
                     }
 
                     center = tableView
@@ -44,22 +47,6 @@ class MainView : View() {
                     }
                 }
             }
-
-
-
-//            tableView = TableView<List<String>>().apply {
-//                isEditable = false
-//                items = databaseController.getRecords(tables[0]).observable()
-//
-//                val types = databaseController.getColumnNames(tables[0])
-//                for (k in 0..types.size - 1) {
-//                    column<List<String>, String>(types[k]) {
-//                        ReadOnlyObjectWrapper(it.value[k])
-//                    }
-//                }
-//            }
-//
-//            center = tableView
         }
     }
 
