@@ -7,7 +7,10 @@ apply plugin: 'application'
 
 repositories{
     mavenCentral()
-    jcenter()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget= "1.8"
 }
 
 jar {
@@ -21,7 +24,6 @@ jar {
 }
 
 dependencies {
-    compile 'apache-log4j:log4j:1.2.15'
     compile 'org.apache.commons:commons-lang3:3.5'
     compile 'junit:junit:4.7'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
