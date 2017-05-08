@@ -7,6 +7,9 @@ apply plugin: 'application'
 
 repositories{
     mavenCentral()
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 compileKotlin {
@@ -28,6 +31,7 @@ dependencies {
     compile 'junit:junit:4.7'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile 'no.tornado:tornadofx:1.7.2'
+    compile name: 'ojdbc8'
 }
 
 buildscript {
@@ -35,6 +39,7 @@ buildscript {
     repositories {
         mavenCentral()
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }

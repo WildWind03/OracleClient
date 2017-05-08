@@ -18,7 +18,7 @@ class NewTableView(selectedTableSpace : String?) : View() {
             form {
                 fieldset {
                     field(TABLESPACE) {
-                        combobox<String> {
+                        combobox <String> {
                             items = DatabaseControllerMock.getTablespaces().observable()
 
                             var i : Int = 0

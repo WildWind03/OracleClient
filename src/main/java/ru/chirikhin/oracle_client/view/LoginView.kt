@@ -18,8 +18,8 @@ class LoginView : View() {
 
     private val IP_DEFAULT = "127.0.0.1"
     private val PORT_DEFAULT = "12000"
-    private val USERNAME_DEFAULT = "SYSTEM"
-    private val PASSWORD_DEFAULT = "123456"
+    private val USERNAME_DEFAULT = "C##Wind"
+    private val PASSWORD_DEFAULT = "Pumpkin123"
 
     private val SIGN_IN = "Sign in"
     private val USERNAME = "Username"
