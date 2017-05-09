@@ -1,6 +1,7 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.scene.layout.VBox
+import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.database.DatabaseControllerMock
 import tornadofx.*
 import java.util.ArrayList
@@ -9,7 +10,7 @@ class NewTableView(selectedTableSpace : String?) : View() {
     override val root = VBox()
 
     private val TABLESPACE = "Tablespace"
-    private val TYPE_TABLENAME = "Name of the table"
+    private val TABLE_NAME = "Name of the table"
 
     private val columnSettings = ArrayList<ColumnProperties>()
 
@@ -19,7 +20,7 @@ class NewTableView(selectedTableSpace : String?) : View() {
                 fieldset {
                     field(TABLESPACE) {
                         combobox <String> {
-                            items = DatabaseControllerMock.getTablespaces().observable()
+                            items = DatabaseController.getTablespaces().observable()
 
                             var i : Int = 0
                             items.forEach {
@@ -32,13 +33,13 @@ class NewTableView(selectedTableSpace : String?) : View() {
                             }
                         }
                     }
-                    field(TYPE_TABLENAME) {
+                    field(TABLE_NAME) {
                         textfield {
 
                         }
                     }
 
-                    field("COLUMN_SETTINGS") {
+                    field("Settings") {
                         tableview<ColumnProperties> {
                             contextmenu {
                                 menuitem("Add column") {

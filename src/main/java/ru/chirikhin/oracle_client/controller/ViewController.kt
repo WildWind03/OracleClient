@@ -22,8 +22,7 @@ class ViewController : Controller() {
 
                     Platform.runLater({
                         replaceWith(MainView::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
-                    }
-                    )
+                    })
                 } catch (e: SQLException) {
                     showAlert("Error", "Can not connect to the database", e.message ?:
                             "No additional information", Alert.AlertType.ERROR)

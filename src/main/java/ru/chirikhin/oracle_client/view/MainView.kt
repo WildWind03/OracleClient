@@ -2,22 +2,20 @@ package ru.chirikhin.oracle_client.view
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.scene.control.TableView
-import javafx.scene.control.TreeCell
 import javafx.scene.control.TreeItem
-import javafx.scene.control.TreeTableRow
-import javafx.scene.control.cell.TextFieldTreeCell
 import javafx.scene.layout.BorderPane
 import ru.chirikhin.oracle_client.database.DatabaseController
+import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showErrorAlert
 import tornadofx.*
 import java.sql.SQLException
-import javax.xml.stream.events.Attribute
 
 
 class MainView : View() {
     override val root = BorderPane()
 
     var tableView: TableView<List<String>>? = null
+    val databaseRepresentation : DatabaseRepresentation = DatabaseRepresentation()
 
     private val MAIN_VIEW_TITLE = "Oracle Client"
     private val TABLESPACES = "Tablespaces"
