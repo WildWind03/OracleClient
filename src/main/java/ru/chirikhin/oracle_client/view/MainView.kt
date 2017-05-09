@@ -2,10 +2,16 @@ package ru.chirikhin.oracle_client.view
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.scene.control.TableView
+import javafx.scene.control.TreeCell
 import javafx.scene.control.TreeItem
+import javafx.scene.control.TreeTableRow
+import javafx.scene.control.cell.TextFieldTreeCell
 import javafx.scene.layout.BorderPane
 import ru.chirikhin.oracle_client.database.DatabaseController
+import ru.chirikhin.oracle_client.util.showErrorAlert
 import tornadofx.*
+import java.sql.SQLException
+import javax.xml.stream.events.Attribute
 
 
 class MainView : View() {
@@ -27,40 +33,52 @@ class MainView : View() {
 
         with(root) {
             left = treeview<String> {
-                selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
+                selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                     val treeItem = newValue
-                    val types = databaseController.getColumnNames(treeItem.value)
 
-                    if (null != types) {
-                        tableView = TableView<List<String>>().apply {
-                            items = databaseController.getRecords(treeItem.value).observable()
+                    try {
+                        if (newValue.isLeaf) {
+                            val types = databaseController.getColumnNames(treeItem.value)
 
-                            for (k in 0..types.size - 1) {
-                                column<List<String>, String>(types[k]) {
-                                    ReadOnlyObjectWrapper(it.value[k])
+                            if (null != types && types.isNotEmpty()) {
+                                tableView = TableView<List<String>>().apply {
+                                    items = databaseController.getRecords(treeItem.value).observable()
+
+                                    for (k in 0..types.size - 1) {
+                                        column<List<String>, String>(types[k]) {
+                                            ReadOnlyObjectWrapper(it.value[k])
+                                        }
+                                    }
                                 }
+                            } else {
+                                tableView = null
                             }
                         }
-                    } else {
-                        tableView = null
+                    } catch (e : SQLException) {
+                        showErrorAlert(e.localizedMessage)
                     }
 
                     center = tableView
                 }
 
                 root = TreeItem(TABLESPACES)
-                val tablespaces = databaseController.getTablespaces()
 
-                for (tablespace in tablespaces) {
-                    val tablespaceItem = TreeItem(tablespace)
-                    root.children.add(tablespaceItem)
+                try {
+                    val tablespaces = databaseController.getTablespaces()
 
-                    val tables = databaseController.getTableNames(tablespace)
-                    tablespaceItem.children.apply {
-                        tables?.forEach {
-                            add(TreeItem(it))
+                    for (tablespace in tablespaces) {
+                        val tablespaceItem = TreeItem(tablespace)
+                        root.children.add(tablespaceItem)
+
+                        val tables = databaseController.getTableNames(tablespace)
+                        tablespaceItem.children.apply {
+                            tables.forEach {
+                                add(TreeItem(it))
+                            }
                         }
                     }
+                } catch (e : SQLException) {
+                    showErrorAlert(e.localizedMessage)
                 }
 
                 contextmenu {
