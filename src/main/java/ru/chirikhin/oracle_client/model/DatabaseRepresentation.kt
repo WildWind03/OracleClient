@@ -6,13 +6,13 @@ class DatabaseRepresentation {
 
     fun addTablespaces(tablespaces: Collection<String>) {
         tablespaces.forEach {
-            this.tablespaces.put(it, null);
+            this.tablespaces.put(it, HashMap<String, Table?>())
         }
     }
 
     fun addTables(tablespace: String, tables: Collection<String>) {
         tables.forEach {
-            tablespaces[tablespace]?.put(it, Table())
+            tablespaces[tablespace]?.put(it, Table()) ?: NoSuchTablespaceException()
         }
     }
 

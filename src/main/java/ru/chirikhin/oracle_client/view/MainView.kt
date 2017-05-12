@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
+import ru.chirikhin.oracle_client.database.Constraint
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showErrorAlert
@@ -63,12 +64,22 @@ class MainView : View() {
 
                 try {
                     val tablespaces = databaseController.getTablespaces()
+                    databaseRepresentation.addTablespaces(tablespaces)
 
                     for (tablespace in tablespaces) {
                         val tablespaceItem = TreeItem(tablespace)
                         root.children.add(tablespaceItem)
 
                         val tables = databaseController.getTableNames(tablespace)
+                        databaseRepresentation.addTables(tablespace, tables)
+
+                        tables.forEach {
+                            val tableConstraints = databaseController.getConstraints(tablespace, it)
+                            val constraintMap = HashMap<String, Constraint>()
+                            tableConstraints.forEach { constraintMap.put(it.name, it) }
+                            databaseRepresentation.getTable(tablespace, it).setConstraints(constraintMap)
+                        }
+
                         tablespaceItem.children.apply {
                             tables.forEach {
                                 add(TreeItem(it))
