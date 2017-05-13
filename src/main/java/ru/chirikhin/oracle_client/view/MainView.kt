@@ -74,7 +74,7 @@ class MainView : View() {
                         databaseRepresentation.addTables(tablespace, tables)
 
                         tables.forEach {
-                            val tableConstraints = databaseController.getConstraints(tablespace, it)
+                            val tableConstraints = databaseController.getConstraints(it)
                             val constraintMap = HashMap<String, Constraint>()
                             tableConstraints.forEach { constraintMap.put(it.name, it) }
                             databaseRepresentation.getTable(tablespace, it).setConstraints(constraintMap)

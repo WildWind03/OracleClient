@@ -2,20 +2,20 @@ package ru.chirikhin.oracle_client.database
 
 
 object DatabaseControllerMock : IDatabaseController() {
-    override fun getColumnNames(tablename: String): List<String>? {
-        if (tablename == "SCHOOL") {
+    override fun getColumnNames(tableName: String): List<String>? {
+        if (tableName == "SCHOOL") {
             return listOf("NUMBER", "ADDRESS", "TYPE")
         }
 
-        if (tablename == "TEACHER") {
+        if (tableName == "TEACHER") {
             return listOf("ID", "NAME", "AGE")
         }
 
         return null
     }
 
-    override fun getRecords(tablename: String): List<List<String>> {
-        when (tablename) {
+    override fun getRecords(tableName: String): List<List<String>> {
+        when (tableName) {
             "SCHOOL" -> {
                 return listOf(listOf("197", "Dovatora street", "Common"), listOf("59", "Dovatora st.", "Common"));
             }
