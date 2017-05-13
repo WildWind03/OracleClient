@@ -15,7 +15,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
     private val TABLE_NAME = "Name of the table"
     private val EXAMPLE_NAME_OF_TABLE = "New table"
 
-    private val columnSettings = ArrayList<Column>()
+    private val columnSettings = ArrayList<Column>().observable()
     private val constraints = ArrayList<Constraint>()
 
     init {
@@ -34,7 +34,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
 
                             field("Table description") {
                                 listview<Column> {
-                                    items = columnSettings.observable()
+                                    items = columnSettings
                                 }
                             }
 
@@ -66,14 +66,6 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                             }
                         }
                     }
-
-//                    tableview<ColumnProperties> {
-//                        items = columnSettings.observable()
-//                        column("NAME", ColumnProperties::name)
-//                        column("NOT NULL", ColumnProperties::notNull)
-//                        column("UNIQUE", ColumnProperties::isUnique)
-//                        column("PRIMARY KEY", ColumnProperties::isPrimaryKey)
-//                    }
 
                 }
             }

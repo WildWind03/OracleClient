@@ -37,6 +37,7 @@ class MainView : View() {
                     item(ADD_NEW_ITEM) {
                         setOnAction {
                             NewTableView(databaseRepresentation).openModal(resizable = false)
+
                         }
                     }
 
