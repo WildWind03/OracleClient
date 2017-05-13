@@ -7,6 +7,7 @@ import javafx.scene.layout.BorderPane
 import ru.chirikhin.oracle_client.database.Constraint
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
+import ru.chirikhin.oracle_client.model.NoSuchTablespaceException
 import ru.chirikhin.oracle_client.util.showErrorAlert
 import tornadofx.*
 import java.sql.SQLException
@@ -31,25 +32,43 @@ class MainView : View() {
         }
 
         with(root) {
+            top = menubar {
+                menu("Table") {
+                    item(ADD_NEW_ITEM) {
+                        setOnAction {
+                            NewTableView(databaseRepresentation).openModal(resizable = false)
+                        }
+                    }
+
+                    item("Alter") {
+
+                    }
+                }
+            }
+
             left = treeview<String> {
                 selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                     val treeItem = newValue
-
                     try {
                         if (newValue.isLeaf) {
-                            val types = databaseController.getColumnNames(treeItem.value)
+                            try {
+                                val types = databaseRepresentation.getColumnNames(newValue.parent.value,
+                                        treeItem.value)
 
-                            if (null != types && types.isNotEmpty()) {
-                                tableView = TableView<List<String>>().apply {
-                                    items = databaseController.getRecords(treeItem.value).observable()
+                                if (null != types && types.isNotEmpty()) {
+                                    tableView = TableView<List<String>>().apply {
+                                        items = databaseController.getRecords(treeItem.value).observable()
 
-                                    for (k in 0..types.size - 1) {
-                                        column<List<String>, String>(types[k]) {
-                                            ReadOnlyObjectWrapper(it.value[k])
+                                        for (k in 0..types.size - 1) {
+                                            column<List<String>, String>(types[k]) {
+                                                ReadOnlyObjectWrapper(it.value[k])
+                                            }
                                         }
                                     }
+                                } else {
+                                    tableView = null
                                 }
-                            } else {
+                            } catch(e : NoSuchTablespaceException) {
                                 tableView = null
                             }
                         }
@@ -73,11 +92,16 @@ class MainView : View() {
                         val tables = databaseController.getTableNames(tablespace)
                         databaseRepresentation.addTables(tablespace, tables)
 
+                        val constraints = databaseController.getConstraints(tables)
+
                         tables.forEach {
-                            val tableConstraints = databaseController.getConstraints(it)
+                            val tableConstraints = constraints[it]
                             val constraintMap = HashMap<String, Constraint>()
-                            tableConstraints.forEach { constraintMap.put(it.name, it) }
+                            tableConstraints?.forEach { constraintMap.put(it.name, it) }
                             databaseRepresentation.getTable(tablespace, it).setConstraints(constraintMap)
+
+                            val columns = databaseController.getColumns(it)
+                            databaseRepresentation.getTable(tablespace, it).setColumns(columns)
                         }
 
                         tablespaceItem.children.apply {
@@ -88,12 +112,6 @@ class MainView : View() {
                     }
                 } catch (e : SQLException) {
                     showErrorAlert(e.localizedMessage)
-                }
-
-                contextmenu {
-                    menuitem(ADD_NEW_ITEM) {
-                        NewTableView(selectedValue).openModal()
-                    }
                 }
             }
         }

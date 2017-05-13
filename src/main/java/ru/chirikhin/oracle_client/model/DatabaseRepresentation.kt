@@ -29,15 +29,19 @@ class DatabaseRepresentation {
         getTable(tablespace, nameOfTable).deleteColumn(columnName)
     }
 
-    private fun getTablespaces() : List<String> {
+    fun getTablespaces() : List<String> {
         return tablespaces.keys.toTypedArray().asList()
     }
 
-    private fun getTables(tablespace : String) : HashMap<String, Table?> {
+    fun getTables(tablespace : String) : HashMap<String, Table?> {
         return tablespaces[tablespace] ?: throw NoSuchTablespaceException()
     }
 
     fun getTable(tablespace : String, nameOfTable : String) : Table {
         return getTables(tablespace).get(nameOfTable) ?: throw NoSuchTableException()
+    }
+
+    fun getColumnNames(tablespace: String, tableName : String) : List<String>? {
+        return getTables(tablespace).get(tableName)?.getColumnNames()
     }
 }

@@ -1,5 +1,7 @@
 package ru.chirikhin.oracle_client.database
 
+import ru.chirikhin.oracle_client.model.Column
+import ru.chirikhin.oracle_client.model.Type
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
@@ -32,15 +34,18 @@ object DatabaseController : IDatabaseController() {
         return tableList
     }
 
-    override fun getColumnNames(tableName: String): List<String>? {
-        val columnList : ArrayList<String> = ArrayList()
+    override fun getColumns(tableName: String): List<Column>? {
+        val columnList : ArrayList<Column> = ArrayList()
         val statement = connection?.createStatement() ?: throw NoConnectionException()
-        val rc : ResultSet = statement.executeQuery("SELECT table_name, column_name, data_type, data_length" +
+        statement.executeQuery("SELECT column_name, data_type, data_precision, data_scale," +
+                " nullable, char_length" +
                 " FROM USER_TAB_COLUMNS" +
-                " WHERE table_name = '$tableName'")
+                " WHERE table_name = '$tableName'").use {
 
-        while(rc.next()) {
-            columnList.add(rc.getString(2))
+            while (it.next()) {
+                columnList.add(Column(it.getString(5) != "Y", it.getString(2), it.getString(1)))
+
+            }
         }
 
         return columnList
@@ -51,7 +56,8 @@ object DatabaseController : IDatabaseController() {
 
         val statement = connection?.createStatement() ?: throw NoConnectionException()
 
-        statement.executeQuery("SELECT constraint_name, column_name FROM ((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
+        statement.executeQuery("SELECT constraint_name, column_name FROM " +
+                "((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
                 " WHERE table_name = '$tableName' AND constraint_type = 'U'").use {
             while(it.next()) {
                 uniqueConstraint.add(Constraint.UniqueConstraint(it.getString(1),
@@ -62,12 +68,134 @@ object DatabaseController : IDatabaseController() {
         return uniqueConstraint
     }
 
+    private fun getForeignKeys(tables : List<String>) : HashMap<String, ArrayList<Constraint>> {
+        val constraints = HashMap<String, ArrayList<Constraint>>()
+
+        if (tables.isEmpty()) {
+            return constraints
+        }
+
+        tables.forEach {
+            constraints.put(it, ArrayList())
+        }
+
+        val queryBuilder = StringBuilder()
+        queryBuilder.append("select src_cc.owner as src_scheme, src_cc.table_name as src_table," +
+                " src_cc.column_name as src_column, dest_cc.owner as dest_scheme, dest_cc.table_name as dest_table," +
+        " dest_cc.column_name as dest_column, c.constraint_name" +
+                " from all_constraints c inner join all_cons_columns dest_cc " +
+                "on c . r_constraint_name = dest_cc.constraint_name and c . r_owner = dest_cc.owner" +
+                " inner join all_cons_columns src_cc on c . constraint_name = src_cc.constraint_name and c . owner = src_cc . owner" +
+                " where c . constraint_type = 'R' AND (")
+
+        for (i in 0..tables.size - 1) {
+            if (i < tables.size - 1) {
+                queryBuilder.append("dest_cc.table_name = '${tables[i]}' OR ")
+            } else {
+                queryBuilder.append("dest_cc.table_name = '${tables[i]}')")
+            }
+        }
+
+        val statement = connection?.createStatement() ?: throw NoConnectionException()
+
+        statement.executeQuery(queryBuilder.toString()).use {
+            while (it.next()) {
+                val table = it.getString(2)
+                constraints[table]?.add(Constraint.ForeignKey(it.getString(7), it.getString(1), it.getString(2),
+                        it.getString(3), it.getString(4), it.getString(5), it.getString(6)))
+
+            }
+        }
+
+        return constraints
+    }
+
+    private fun getPrimaryKeys(tables : List<String>) : HashMap<String, ArrayList<Constraint>> {
+        val constraints = HashMap<String, ArrayList<Constraint>>()
+
+        if (tables.isEmpty()) {
+            return constraints
+        }
+        tables.forEach {
+            constraints.put(it, ArrayList())
+        }
+
+        val queryBuilder = StringBuilder()
+
+        queryBuilder.append("SELECT constraint_name, column_name, table_name FROM " +
+                "((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
+                " WHERE constraint_type = 'P' AND (")
+
+        for (i in 0..tables.size - 1) {
+            if (i < tables.size - 1) {
+                queryBuilder.append("table_name = '${tables[i]}' OR ")
+            } else {
+                queryBuilder.append("table_name = '${tables[i]}')")
+            }
+        }
+
+        val statement = connection?.createStatement() ?: throw NoConnectionException()
+
+        statement.executeQuery(queryBuilder.toString()).use {
+            while (it.next()) {
+                val table = it.getString(3)
+                constraints[table]?.add(Constraint.PrimaryKey(it.getString(1), it.getString(2)))
+            }
+        }
+
+        return constraints
+    }
+
+    private fun getUniqueConstraints(tables : List<String>) : HashMap<String, ArrayList<Constraint>> {
+        val constraints = HashMap<String, ArrayList<Constraint>>()
+
+        if (tables.isEmpty()) {
+            return constraints
+        }
+
+        tables.forEach {
+            constraints.put(it, ArrayList())
+        }
+
+        val queryBuilder = StringBuilder()
+
+        queryBuilder.append("SELECT constraint_name, column_name, table_name FROM " +
+                "((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
+                " WHERE constraint_type = 'U' AND (")
+
+        for (i in 0..tables.size - 1) {
+            if (i < tables.size - 1) {
+                queryBuilder.append("table_name = '${tables[i]}' OR ")
+            } else {
+                queryBuilder.append("table_name = '${tables[i]}')")
+            }
+        }
+
+        println(queryBuilder.toString())
+
+        val statement = connection?.createStatement() ?: throw NoConnectionException()
+
+        statement.executeQuery(queryBuilder.toString()).use {
+            while (it.next()) {
+                val table = it.getString(3)
+                constraints[table]?.add(Constraint.UniqueConstraint(it.getString(1), it.getString(2)))
+            }
+        }
+
+        return constraints
+    }
+
     private fun getForeignKeys(tableName: String) : ArrayList<Constraint.ForeignKey> {
         val foreignKeys = ArrayList<Constraint.ForeignKey>()
 
         val statement = connection?.createStatement() ?: throw NoConnectionException()
 
-        statement.executeQuery("select src_cc.owner as src_scheme, src_cc.table_name as src_table, src_cc.column_name as src_column, dest_cc.owner as dest_scheme, dest_cc.table_name as dest_table, dest_cc.column_name as dest_column, c.constraint_name from all_constraints c inner join all_cons_columns dest_cc on c . r_constraint_name = dest_cc.constraint_name and c . r_owner = dest_cc.owner inner join all_cons_columns src_cc on c . constraint_name = src_cc.constraint_name and c . owner = src_cc . owner" +
+        statement.executeQuery("select src_cc.owner as src_scheme, src_cc.table_name as src_table," +
+                " src_cc.column_name as src_column, dest_cc.owner as dest_scheme, dest_cc.table_name as dest_table," +
+                " dest_cc.column_name as dest_column, c.constraint_name" +
+                " from all_constraints c inner join all_cons_columns dest_cc " +
+                "on c . r_constraint_name = dest_cc.constraint_name and c . r_owner = dest_cc.owner" +
+                " inner join all_cons_columns src_cc on c . constraint_name = src_cc.constraint_name and c . owner = src_cc . owner" +
                 " where c . constraint_type = 'R' and dest_cc.table_name = '$tableName'").use {
             while(it.next()) {
                 foreignKeys.add(Constraint.ForeignKey(it.getString(7), it.getString(1), it.getString(2),
@@ -83,7 +211,8 @@ object DatabaseController : IDatabaseController() {
 
         val statement = connection?.createStatement() ?: throw NoConnectionException()
 
-        val rc = statement.executeQuery("SELECT constraint_name, column_name FROM ((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
+        val rc = statement.executeQuery("SELECT constraint_name, column_name FROM " +
+                "((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
                 " WHERE table_name = '$tableName' AND constraint_type = 'P'")
 
         while(rc.next()) {
@@ -92,6 +221,15 @@ object DatabaseController : IDatabaseController() {
 
         return primaryKeys
 
+    }
+
+    fun getConstraints(tables : List<String>) : HashMap<String, ArrayList<Constraint>> {
+        val constraints = HashMap<String, ArrayList<Constraint>>()
+        constraints.putAll(getForeignKeys(tables))
+        constraints.putAll(getPrimaryKeys(tables))
+        constraints.putAll(getUniqueConstraints(tables))
+
+        return constraints
     }
 
     fun getConstraints(tableName: String) : ArrayList<Constraint> {

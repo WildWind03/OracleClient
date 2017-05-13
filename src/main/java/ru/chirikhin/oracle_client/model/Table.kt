@@ -4,20 +4,20 @@ import ru.chirikhin.oracle_client.database.Constraint
 
 
 class Table {
-    private var rows : ArrayList<ArrayList<String>>? = null
-    private val rowMetaInformation : HashMap<String, Column> = HashMap()
+    private var rows : ArrayList<ArrayList<String>>? = ArrayList()
+    private val columns: HashMap<String, Column> = HashMap()
     private var constraints : HashMap<String, Constraint> = HashMap()
 
     fun addColumn(name : String, column: Column) {
-        rowMetaInformation.put(name, column)
+        columns.put(name, column)
     }
 
     fun getColumn(name : String) : Column {
-        return rowMetaInformation[name] ?: throw NoSuchColumnException()
+        return columns[name] ?: throw NoSuchColumnException()
     }
 
     fun deleteColumn(name : String) {
-        rowMetaInformation.remove(name)
+        columns.remove(name)
     }
 
     fun addConstraint(name : String, constraint: Constraint) {
@@ -30,6 +30,20 @@ class Table {
 
     fun setConstraints(constraints : HashMap<String, Constraint>) {
         this.constraints = constraints
+    }
+
+    fun setColumns(columns : List<Column>?) {
+        columns?.forEach {
+            addColumn(it.name, it)
+        }
+    }
+
+    fun getColumnNames() : List<String> {
+        return columns.keys.toList()
+    }
+
+    fun setRows(rows : ArrayList<ArrayList<String>>?) {
+        this.rows = rows
     }
 
     fun clearConstraints() {
