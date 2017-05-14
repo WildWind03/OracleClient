@@ -16,8 +16,8 @@ import java.sql.SQLException
 class MainView : View() {
     override val root = BorderPane()
 
-    var tableView: TableView<List<String>>? = null
-    val databaseRepresentation : DatabaseRepresentation = DatabaseRepresentation()
+    private var tableView: TableView<List<String>>? = null
+    private val databaseRepresentation : DatabaseRepresentation = DatabaseRepresentation()
 
     private val MAIN_VIEW_TITLE = "Oracle Client"
     private val TABLESPACES = "Tablespaces"
@@ -27,6 +27,7 @@ class MainView : View() {
 
     init {
         title = MAIN_VIEW_TITLE
+
         with(primaryStage) {
             isMaximized = true
         }
@@ -49,31 +50,29 @@ class MainView : View() {
             left = treeview<String> {
                 selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                     val treeItem = newValue
+
                     try {
                         if (newValue.isLeaf) {
-                            try {
-                                val types = databaseRepresentation.getColumnNames(newValue.parent.value,
-                                        treeItem.value)
+                            val types = databaseRepresentation.getColumnNames(newValue.parent.value,
+                                    treeItem.value)
 
-                                if (types.isNotEmpty()) {
-                                    tableView = TableView<List<String>>().apply {
-                                        items = databaseController.getRecords(treeItem.value).observable()
+                            if (types.isNotEmpty()) {
+                                tableView = TableView<List<String>>().apply {
+                                    items = databaseController.getRecords(treeItem.value).observable()
 
-                                        for (k in 0..types.size - 1) {
-                                            column<List<String>, String>(types[k]) {
-                                                ReadOnlyObjectWrapper(it.value[k])
-                                            }
+                                    for (k in 0..types.size - 1) {
+                                        column<List<String>, String>(types[k]) {
+                                            ReadOnlyObjectWrapper(it.value[k])
                                         }
                                     }
-                                } else {
-                                    tableView = null
                                 }
-                            } catch(e : NoSuchTablespaceException) {
+                            } else {
                                 tableView = null
                             }
                         }
                     } catch (e : SQLException) {
                         showSQLInternalError(e.localizedMessage)
+                        tableView = null
                     }
 
                     center = tableView

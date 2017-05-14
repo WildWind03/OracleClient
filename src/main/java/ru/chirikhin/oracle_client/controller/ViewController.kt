@@ -4,8 +4,10 @@ import javafx.application.Platform
 import javafx.scene.control.Alert
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.util.showAlert
+import ru.chirikhin.oracle_client.view.ChangeLayoutEvent
 import ru.chirikhin.oracle_client.view.EventLogin
 import ru.chirikhin.oracle_client.view.MainView
+import ru.chirikhin.oracle_client.view.ProgressIndicatorView
 import tornadofx.Controller
 import tornadofx.ViewTransition
 import tornadofx.seconds
@@ -18,11 +20,13 @@ class ViewController : Controller() {
         subscribe<EventLogin> {
             it.loginView.apply {
                 try {
+                    Platform.runLater({
+                        replaceWith(ProgressIndicatorView::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
+                    })
+
                     databaseController.connect(it.ip, it.port, it.username, it.password)
 
-                    Platform.runLater({
-                        replaceWith(MainView::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
-                    })
+                    fire(ChangeLayoutEvent())
                 } catch (e: SQLException) {
                     showAlert("Error", "Can not connect to the database", e.message ?:
                             "No additional information", Alert.AlertType.ERROR)

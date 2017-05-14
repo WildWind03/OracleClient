@@ -18,9 +18,9 @@ import java.util.*
 class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
     override val root = VBox()
 
-    private val TABLESPACE = "Tablespace"
-    private val TABLE_NAME = "Name of the table"
-    private val EXAMPLE_NAME_OF_TABLE = "New table"
+    private val TABLESPACE_LABEL = "Tablespace"
+    private val TABLE_NAME_LABEL = "Name of the table"
+    private val EXAMPLE_NAME_OF_TABLE = "NewTable1"
 
     private val columnSettings = ArrayList<Column>().observable()
     private val constraints = ArrayList<Constraint>().observable()
@@ -31,19 +31,22 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
     init {
         with(root) {
             title = "Add new table"
+
             form {
                 alignmentProperty().value = Pos.CENTER
                 fieldset {
                     labelPosition = Orientation.VERTICAL
                     vbox {
-                        field(TABLESPACE) {
+                        field(TABLESPACE_LABEL) {
                             tablespaceComboBox = combobox <String> {
                                 items = databaseRepresentation.getTablespaces().observable()
-                                selectionModel.select(0)
+                                if (items.isNotEmpty()) {
+                                    selectionModel.select(0)
+                                }
                             }
                         }
 
-                        field(TABLE_NAME) {
+                        field(TABLE_NAME_LABEL) {
                             tableNameTextField = textfield {
                                 text = EXAMPLE_NAME_OF_TABLE
                             }
@@ -132,7 +135,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                                         setConstraints(constraints)
                                     })
                             close()
-                        } catch (e : Exception) {
+                        } catch (e: Exception) {
                             showSQLInternalError(e.message ?: "No reason")
                         }
                     }
