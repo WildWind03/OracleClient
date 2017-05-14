@@ -12,13 +12,15 @@ repositories{
     }
 }
 
+mainClassName = "ru.chirikhin.oracle_client.main.Main"
+
 compileKotlin {
     kotlinOptions.jvmTarget= "1.8"
 }
 
 jar {
     manifest {
-        attributes 'Main-Class' : 'ru.chirikhin.chattree.Main'
+        attributes 'Main-Class' : 'ru.chirikhin.oracle_client.main.Main'
     }
 
     from {
@@ -35,7 +37,7 @@ dependencies {
 }
 
 buildscript {
-    ext.kotlin_version = '1.1.1'
+    ext.kotlin_version = '1.1.2-2'
     repositories {
         mavenCentral()
     }
