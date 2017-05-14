@@ -1,6 +1,7 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.scene.control.ListCell
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane

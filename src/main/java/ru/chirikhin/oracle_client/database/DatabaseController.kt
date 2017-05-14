@@ -194,7 +194,7 @@ object DatabaseController : IDatabaseController() {
                 " from all_constraints c inner join all_cons_columns dest_cc " +
                 "on c . r_constraint_name = dest_cc.constraint_name and c . r_owner = dest_cc.owner" +
                 " inner join all_cons_columns src_cc on c . constraint_name = src_cc.constraint_name and c . owner = src_cc . owner" +
-                " where c . constraint_type = 'R' and dest_cc.table_name = '$tableName'").use {
+                " where c . constraint_type = 'R' and dest_cc.table_name = \"$tableName\"").use {
             while(it.next()) {
                 foreignKeys.add(Constraint.ForeignKey(it.getString(7),
                         it.getString(3), it.getString(5), it.getString(6)))
@@ -211,7 +211,7 @@ object DatabaseController : IDatabaseController() {
 
         val rc = statement.executeQuery("SELECT constraint_name, column_name FROM " +
                 "((SELECT constraint_name as cn, constraint_type from user_constraints) inner join user_cons_columns ON cn = CONSTRAINT_NAME)" +
-                " WHERE table_name = '$tableName' AND constraint_type = 'P'")
+                " WHERE table_name = \"$tableName\" AND constraint_type = \"P\"")
 
         while(rc.next()) {
             primaryKeys.add(Constraint.PrimaryKey(rc.getString(1), rc.getString(2)))

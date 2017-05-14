@@ -9,10 +9,12 @@ import ru.chirikhin.oracle_client.database.Constraint
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.Column
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
+import ru.chirikhin.oracle_client.model.Table
 import ru.chirikhin.oracle_client.util.createNewTableQueryFromData
 import ru.chirikhin.oracle_client.util.showErrorAlert
 import tornadofx.*
 import java.util.*
+import java.util.stream.Collectors
 
 class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
     override val root = VBox()
@@ -126,6 +128,10 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                             )
 
                             DatabaseController.createTableWithQuery(readyQuery)
+                            databaseRepresentation.addTable(tablespaceComboBox.value,
+                                    Table(tableNameTextField.text).apply {
+                                        setConstraints(constraints)
+                                    })
                             close()
                         } catch (e : Exception) {
                             showErrorAlert(e.message ?: "No reason")

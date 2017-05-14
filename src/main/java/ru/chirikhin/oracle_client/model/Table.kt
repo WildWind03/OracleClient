@@ -1,5 +1,6 @@
 package ru.chirikhin.oracle_client.model
 
+import javafx.collections.ObservableList
 import ru.chirikhin.oracle_client.database.Constraint
 
 
@@ -53,5 +54,12 @@ class Table(nameOfTable: String) {
 
     override fun toString(): String {
         return name
+    }
+
+    fun setConstraints(constraints: ObservableList<Constraint>) {
+        val constraintsMap : HashMap<String, Constraint> = HashMap()
+        constraints.forEach {
+            constraintsMap.put(it.name, it)
+        }
     }
 }
