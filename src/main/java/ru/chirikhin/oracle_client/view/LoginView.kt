@@ -47,6 +47,7 @@ class LoginView : View() {
         with(primaryStage) {
             minWidth = MIN_WIDTH.toDouble()
             minHeight = MIN_HEIGHT.toDouble()
+            resizableProperty().set(false)
         }
 
         val ipPattern = Pattern.compile(getIpRegex())

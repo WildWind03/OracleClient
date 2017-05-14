@@ -1,14 +1,11 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.collections.ObservableList
-import javafx.geometry.Orientation
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.FlowPane
-import javafx.scene.layout.VBox
 import ru.chirikhin.oracle_client.model.Column
 import tornadofx.*
-import java.util.ArrayList
 
 
 class AddColumnView(columnSettings: ObservableList<Column>) : View() {
@@ -23,6 +20,7 @@ class AddColumnView(columnSettings: ObservableList<Column>) : View() {
 
     init {
         with(root) {
+            title = "Add new column"
             form {
                 fieldset {
                     field("Name") {

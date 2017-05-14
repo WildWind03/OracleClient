@@ -16,57 +16,86 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
     private val EXAMPLE_NAME_OF_TABLE = "New table"
 
     private val columnSettings = ArrayList<Column>().observable()
-    private val constraints = ArrayList<Constraint>()
+    private val constraints = ArrayList<Constraint>().observable()
 
     init {
         with(root) {
+            title = "Add new table"
             form {
                 fieldset {
                     labelPosition = Orientation.VERTICAL
-                    hbox {
-                        vbox {
-                            field(TABLESPACE) {
-                                combobox <String> {
-                                    items = databaseRepresentation.getTablespaces().observable()
-                                    selectionModel.select(0)
-                                }
+                    vbox {
+                        field(TABLESPACE) {
+                            combobox <String> {
+                                items = databaseRepresentation.getTablespaces().observable()
+                                selectionModel.select(0)
                             }
+                        }
 
-                            field("Table description") {
-                                listview<Column> {
-                                    items = columnSettings
-                                }
+                        field(TABLE_NAME) {
+                            textfield {
+                                text = EXAMPLE_NAME_OF_TABLE
                             }
+                        }
 
-                            button {
-                                text = "Add column"
+                        field("Table description") {
+                            listview<Column> {
+                                items = columnSettings
+                                setPrefSize(500.0, 200.0)
 
-                                action {
-                                    AddColumnView(columnSettings).openModal(resizable = false)
+                                contextmenu {
+                                    item("Remove column").action {
+                                        columnSettings.remove(selectedItem)
+                                    }
                                 }
                             }
                         }
 
-                        vbox {
-                            paddingLeft = 15
-                            field(TABLE_NAME) {
-                                textfield {
-                                    text = EXAMPLE_NAME_OF_TABLE
+                        button {
+                            text = "Add column"
+
+                            action {
+                                AddColumnView(columnSettings).openModal(resizable = false)
+                            }
+                        }
+
+                        field("Constraints") {
+                            listview<Constraint> {
+                                items = constraints
+                                setPrefSize(500.0, 200.0)
+                            }
+                        }
+
+                        hbox {
+                            spacing = 37.0
+
+                            button("Add primary key") {
+                                action {
+                                    AddConstraintView(columnSettings, object : AddConstraintView.AddConstraintRunnable() {
+                                        override fun run(name: String, columnName: String) {
+                                            constraints.add(Constraint.PrimaryKey(name, columnName))
+                                        }
+
+                                    }, "Add primary key").openModal(resizable = false)
                                 }
                             }
 
-                            field("Constraints") {
-                                listview<Constraint> {
-                                    items = constraints.observable()
+                            button("Add unique constraint") {
+                                action {
+                                    AddConstraintView(columnSettings, object : AddConstraintView.AddConstraintRunnable() {
+                                        override fun run(name: String, columnName: String) {
+                                            constraints.add(Constraint.UniqueConstraint(name, columnName))
+                                        }
+
+                                    }, "Add new unique constraint").openModal(resizable = false)
                                 }
                             }
 
-                            button("Add constraint") {
+                            button ("Add foreign key") {
 
                             }
                         }
                     }
-
                 }
             }
         }
