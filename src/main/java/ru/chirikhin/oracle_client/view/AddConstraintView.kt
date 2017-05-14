@@ -17,18 +17,16 @@ class AddConstraintView(columns: ObservableList<Column>,
     }
 
     override val root = FlowPane()
-    var nameTextField : TextField by singleAssign()
-
-    var columnComboBox : ComboBox<Column> by singleAssign()
-
-    private val EXAMPLE_NAME = "NEW_CON"
+    private var nameTextField : TextField by singleAssign()
+    private var columnComboBox : ComboBox<Column> by singleAssign()
+    private val EXAMPLE_CONSTRAINT_NAME = "Constraint1"
 
     init {
         form {
             fieldset {
                 field("Name") {
                     nameTextField = textfield {
-                        text = EXAMPLE_NAME
+                        text = EXAMPLE_CONSTRAINT_NAME
                     }
                 }
 

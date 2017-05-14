@@ -1,7 +1,6 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.beans.property.ReadOnlyObjectWrapper
-import javafx.scene.control.ListCell
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
@@ -9,7 +8,7 @@ import ru.chirikhin.oracle_client.database.Constraint
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.model.NoSuchTablespaceException
-import ru.chirikhin.oracle_client.util.showErrorAlert
+import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.sql.SQLException
 
@@ -74,7 +73,7 @@ class MainView : View() {
                             }
                         }
                     } catch (e : SQLException) {
-                        showErrorAlert(e.localizedMessage)
+                        showSQLInternalError(e.localizedMessage)
                     }
 
                     center = tableView
@@ -112,7 +111,7 @@ class MainView : View() {
                         }
                     }
                 } catch (e : SQLException) {
-                    showErrorAlert(e.localizedMessage)
+                    showSQLInternalError(e.localizedMessage)
                 }
             }
         }

@@ -11,10 +11,9 @@ import ru.chirikhin.oracle_client.model.Column
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.model.Table
 import ru.chirikhin.oracle_client.util.createNewTableQueryFromData
-import ru.chirikhin.oracle_client.util.showErrorAlert
+import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.util.*
-import java.util.stream.Collectors
 
 class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
     override val root = VBox()
@@ -127,14 +126,14 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                                     columnSettings, constraints
                             )
 
-                            DatabaseController.createTableWithQuery(readyQuery)
+                            DatabaseController.executeQuery(readyQuery)
                             databaseRepresentation.addTable(tablespaceComboBox.value,
                                     Table(tableNameTextField.text).apply {
                                         setConstraints(constraints)
                                     })
                             close()
                         } catch (e : Exception) {
-                            showErrorAlert(e.message ?: "No reason")
+                            showSQLInternalError(e.message ?: "No reason")
                         }
                     }
                 }

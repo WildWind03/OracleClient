@@ -8,6 +8,7 @@ class Table(nameOfTable: String) {
     private var rows : ArrayList<ArrayList<String>>? = ArrayList()
     private val columns: HashMap<String, Column> = HashMap()
     private var constraints : HashMap<String, Constraint> = HashMap()
+
     var name : String = nameOfTable
 
     fun addColumn(name : String, column: Column) {
@@ -35,6 +36,7 @@ class Table(nameOfTable: String) {
     }
 
     fun setColumns(columns : List<Column>?) {
+        this.columns.clear()
         columns?.forEach {
             addColumn(it.name, it)
         }

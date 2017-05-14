@@ -21,14 +21,14 @@ class AddForeignKeyView(columnSettings: ObservableList<Column>, constraints : Ob
     private var destTableComboBox: ComboBox<Table> by singleAssign()
     private var destColumnComboBox: ComboBox<String> by singleAssign()
 
-    private val CONSTRAINT_DEFAULT_NAME = "TABLE_FK"
+    private val DEFAULT_FOREIGN_KEY_TEXT = "DEFAULT_FOREIGN_KEY_NAME"
 
     init {
         form {
             fieldset {
                 field("Name") {
                     constraintNameTextField = textfield {
-                        text = CONSTRAINT_DEFAULT_NAME
+                        text = DEFAULT_FOREIGN_KEY_TEXT
                     }
                 }
 

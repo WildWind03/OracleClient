@@ -14,9 +14,9 @@ class AddColumnView(columnSettings: ObservableList<Column>) : View() {
     private val EXAMPLE_TYPE = "NUMBER"
     private val EXAMPLE_NAME = "Column1"
 
-    private var nullableCheckBox : CheckBox? = null
-    private var typeTextField : TextField? = null
-    private var nameTextFiled : TextField? = null
+    private var nullableCheckBox : CheckBox by singleAssign()
+    private var typeTextField : TextField by singleAssign()
+    private var nameTextFiled : TextField by singleAssign()
 
     init {
         with(root) {
@@ -42,7 +42,7 @@ class AddColumnView(columnSettings: ObservableList<Column>) : View() {
 
                 button("Add new column") {
                     action {
-                        columnSettings.add(Column(!nullableCheckBox!!.isSelected, typeTextField!!.text, nameTextFiled!!.text))
+                        columnSettings.add(Column(!nullableCheckBox.isSelected, typeTextField.text, nameTextFiled.text))
                         close()
                     }
                 }

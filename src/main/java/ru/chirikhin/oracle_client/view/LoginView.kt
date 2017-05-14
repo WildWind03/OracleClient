@@ -29,11 +29,11 @@ class LoginView : View() {
     private val MIN_HEIGHT = 280;
     private val MIN_WIDTH = 340;
 
-    private val signInButton = Button(SIGN_IN)
-    private val ipTextField = TextField(IP_DEFAULT)
-    private val portTextField = TextField(PORT_DEFAULT)
-    private val usernameTextField = TextField(USERNAME_DEFAULT)
-    private val passwordTextField = PasswordField()
+    private var signInButton : Button by singleAssign()
+    private var ipTextField : TextField by singleAssign()
+    private var portTextField : TextField by singleAssign()
+    private var usernameTextField : TextField by singleAssign()
+    private var passwordTextField : PasswordField by singleAssign()
 
     private var isIpValid = true
     private var isPortValid = true
@@ -42,8 +42,8 @@ class LoginView : View() {
 
 
     init {
-        passwordTextField.text = PASSWORD_DEFAULT
         title = APP_NAME
+
         with(primaryStage) {
             minWidth = MIN_WIDTH.toDouble()
             minHeight = MIN_HEIGHT.toDouble()
@@ -59,10 +59,8 @@ class LoginView : View() {
                 alignmentProperty().value = Pos.CENTER
                 fieldset {
                     field(IP) {
-                        add(ipTextField)
-
-                        ipTextField.apply {
-                            textProperty().addListener { observable, oldValue, newValue ->
+                        ipTextField = textfield (IP_DEFAULT) {
+                            textProperty().addListener { _, _, newValue ->
                                 val ipMather = ipPattern.matcher(newValue)
                                 isIpValid = ipMather.matches()
                                 updateSignInEnabledState()
@@ -71,10 +69,8 @@ class LoginView : View() {
                     }
 
                     field(PORT) {
-                        add(portTextField)
-
-                        portTextField.apply {
-                            textProperty().addListener { observable, oldValue, newValue ->
+                        portTextField = textfield (PORT_DEFAULT) {
+                            textProperty().addListener { _, _, newValue ->
                                 val portMather = portPattern.matcher(newValue)
                                 isPortValid = portMather.matches()
                                 updateSignInEnabledState()
@@ -83,10 +79,9 @@ class LoginView : View() {
                     }
 
                     field(USERNAME) {
-                        add(usernameTextField)
 
-                        usernameTextField.apply {
-                            textProperty().addListener { observable, oldValue, newValue ->
+                        usernameTextField = textfield (USERNAME_DEFAULT) {
+                            textProperty().addListener { _, _, newValue ->
                                 isUsernameValid = !newValue.isEmpty()
                                 updateSignInEnabledState()
                             }
@@ -94,20 +89,18 @@ class LoginView : View() {
                     }
 
                     field(PASSWORD) {
-                        add(passwordTextField.apply {
-                            textProperty().addListener { observable, oldValue, newValue ->
+                        passwordTextField = passwordfield(PASSWORD_DEFAULT) {
+                            textProperty().addListener { _, _, newValue ->
                                 isPasswordValid = !newValue.isEmpty()
                                 updateSignInEnabledState()
                             }
-                        })
+                        }
                     }
                 }
 
-                signInButton.apply {
+                signInButton = button(SIGN_IN) {
                     setOnAction { onSignInButtonClicked() }
                 }
-
-                add(signInButton)
             }
         }
     }

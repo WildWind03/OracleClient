@@ -14,6 +14,6 @@ fun showAlert(title : String, header : String, content : String, type : Alert.Al
     })
 }
 
-fun showErrorAlert(content: String) {
+fun showSQLInternalError(content: String) {
     showAlert("Error", "SQL internal error", content, Alert.AlertType.ERROR)
 }

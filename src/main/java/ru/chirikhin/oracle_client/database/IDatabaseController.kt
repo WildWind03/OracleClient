@@ -9,4 +9,5 @@ abstract class IDatabaseController : Controller() {
     abstract fun getColumns(tableName: String) : List<Column>?
     abstract fun getRecords(tableName: String) : List<List<String>>?
     abstract fun connect(ip : String, port : String, username : String, password : String)
+    abstract fun getConstraints(tables: List<String>): HashMap<String, ArrayList<Constraint>>
 }

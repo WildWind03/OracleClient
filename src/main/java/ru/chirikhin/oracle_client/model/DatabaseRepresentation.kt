@@ -1,10 +1,8 @@
 package ru.chirikhin.oracle_client.model
 
-import javafx.scene.control.Tab
-
 
 class DatabaseRepresentation {
-    val tablespaces : HashMap<String, HashMap<String, Table>?> = HashMap()
+    private val tablespaces : HashMap<String, HashMap<String, Table>?> = HashMap()
 
     fun addTablespaces(tablespaces: Collection<String>) {
         tablespaces.forEach {
@@ -13,7 +11,7 @@ class DatabaseRepresentation {
     }
 
     fun addTable(tablespace: String, table : Table) {
-        tablespaces[tablespace]?.put(table.name, table)
+        tablespaces[tablespace]?.put(table.name, table) ?: throw NoSuchTablespaceException()
     }
 
     fun addTables(tablespace: String, tables: Collection<String>) {
