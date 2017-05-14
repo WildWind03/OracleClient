@@ -12,7 +12,7 @@ import tornadofx.*
 class AddConstraintView(columns: ObservableList<Column>,
                         val runnable: AddConstraintRunnable, title: String?) : View(title) {
 
-    abstract class AddConstraintRunnable() {
+    abstract class AddConstraintRunnable {
         abstract fun run(name : String, columnName : String)
     }
 
@@ -21,7 +21,7 @@ class AddConstraintView(columns: ObservableList<Column>,
 
     var columnComboBox : ComboBox<Column> by singleAssign()
 
-    private val EXAMPLE_NAME = "CONSTRAINT NAME"
+    private val EXAMPLE_NAME = "NEW_CON"
 
     init {
         form {

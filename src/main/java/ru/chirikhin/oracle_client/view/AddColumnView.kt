@@ -12,7 +12,7 @@ class AddColumnView(columnSettings: ObservableList<Column>) : View() {
     override val root = FlowPane()
 
     private val EXAMPLE_TYPE = "NUMBER"
-    private val EXAMPLE_NAME = "ANOTHER_COLUMN"
+    private val EXAMPLE_NAME = "Column1"
 
     private var nullableCheckBox : CheckBox? = null
     private var typeTextField : TextField? = null

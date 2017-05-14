@@ -1,13 +1,18 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.geometry.Orientation
+import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
+import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
 import ru.chirikhin.oracle_client.database.Constraint
+import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.Column
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
+import ru.chirikhin.oracle_client.util.createNewTableQueryFromData
+import ru.chirikhin.oracle_client.util.showErrorAlert
 import tornadofx.*
-import java.util.ArrayList
+import java.util.*
 
 class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
     override val root = VBox()
@@ -20,11 +25,13 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
     private val constraints = ArrayList<Constraint>().observable()
 
     private var tablespaceComboBox: ComboBox<String> by singleAssign()
+    private var tableNameTextField: TextField by singleAssign()
 
     init {
         with(root) {
             title = "Add new table"
             form {
+                alignmentProperty().value = Pos.CENTER
                 fieldset {
                     labelPosition = Orientation.VERTICAL
                     vbox {
@@ -36,7 +43,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                         }
 
                         field(TABLE_NAME) {
-                            textfield {
+                            tableNameTextField = textfield {
                                 text = EXAMPLE_NAME_OF_TABLE
                             }
                         }
@@ -66,6 +73,11 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                             listview<Constraint> {
                                 items = constraints
                                 setPrefSize(500.0, 200.0)
+                                contextmenu {
+                                    item("Remove column").action {
+                                        constraints.remove(selectedItem)
+                                    }
+                                }
                             }
                         }
 
@@ -97,13 +109,31 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                             button("Add foreign key") {
                                 action {
                                     val tablespaceName = tablespaceComboBox.selectedItem ?: return@action
-                                    AddForeignKeyView(columnSettings, databaseRepresentation, tablespaceName).openModal(resizable = false)
+                                    AddForeignKeyView(columnSettings, constraints, databaseRepresentation, tablespaceName).openModal(resizable = false)
                                 }
                             }
                         }
                     }
                 }
+
+                button("Add the table") {
+                    action {
+                        try {
+                            val readyQuery = createNewTableQueryFromData(
+                                    tablespaceComboBox.value,
+                                    tableNameTextField.text,
+                                    columnSettings, constraints
+                            )
+
+                            DatabaseController.createTableWithQuery(readyQuery)
+                            close()
+                        } catch (e : Exception) {
+                            showErrorAlert(e.message ?: "No reason")
+                        }
+                    }
+                }
             }
+
         }
     }
 }

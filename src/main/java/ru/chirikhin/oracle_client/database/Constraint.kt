@@ -8,8 +8,8 @@ sealed class Constraint(val name : String) {
         }
     }
 
-    class ForeignKey(conName: String, val srcScheme : String, val srcTable : String, val srcColumn : String, val destTable : String,
-                     val destColumn : String, val destScheme : String)
+    class ForeignKey(conName: String, val srcColumn : String, val destTable : String,
+                     val destColumn : String)
         : Constraint(conName) {
         override fun toString(): String {
             return "$name (type : FOREIGN KEY, src column: $srcColumn, ref_column: $destTable.$destColumn"

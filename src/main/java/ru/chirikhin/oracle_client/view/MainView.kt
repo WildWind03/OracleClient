@@ -37,7 +37,6 @@ class MainView : View() {
                     item(ADD_NEW_ITEM) {
                         setOnAction {
                             NewTableView(databaseRepresentation).openModal(resizable = false)
-
                         }
                     }
 
@@ -56,7 +55,7 @@ class MainView : View() {
                                 val types = databaseRepresentation.getColumnNames(newValue.parent.value,
                                         treeItem.value)
 
-                                if (null != types && types.isNotEmpty()) {
+                                if (types.isNotEmpty()) {
                                     tableView = TableView<List<String>>().apply {
                                         items = databaseController.getRecords(treeItem.value).observable()
 

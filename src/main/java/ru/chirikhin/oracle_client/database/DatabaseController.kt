@@ -101,8 +101,8 @@ object DatabaseController : IDatabaseController() {
         statement.executeQuery(queryBuilder.toString()).use {
             while (it.next()) {
                 val table = it.getString(2)
-                constraints[table]?.add(Constraint.ForeignKey(it.getString(7), it.getString(1), it.getString(2),
-                        it.getString(3), it.getString(4), it.getString(5), it.getString(6)))
+                constraints[table]?.add(Constraint.ForeignKey(it.getString(7),
+                        it.getString(3), it.getString(5), it.getString(6)))
 
             }
         }
@@ -171,8 +171,6 @@ object DatabaseController : IDatabaseController() {
             }
         }
 
-        println(queryBuilder.toString())
-
         val statement = connection?.createStatement() ?: throw NoConnectionException()
 
         statement.executeQuery(queryBuilder.toString()).use {
@@ -198,8 +196,8 @@ object DatabaseController : IDatabaseController() {
                 " inner join all_cons_columns src_cc on c . constraint_name = src_cc.constraint_name and c . owner = src_cc . owner" +
                 " where c . constraint_type = 'R' and dest_cc.table_name = '$tableName'").use {
             while(it.next()) {
-                foreignKeys.add(Constraint.ForeignKey(it.getString(7), it.getString(1), it.getString(2),
-                        it.getString(3), it.getString(4), it.getString(5), it.getString(6)))
+                foreignKeys.add(Constraint.ForeignKey(it.getString(7),
+                        it.getString(3), it.getString(5), it.getString(6)))
             }
         }
 
@@ -246,7 +244,7 @@ object DatabaseController : IDatabaseController() {
         val recordsList : ArrayList<ArrayList<String>> = ArrayList()
         val statement = connection?.createStatement() ?: throw NoConnectionException()
 
-        val rc = statement.executeQuery("SELECT * FROM  $tableName")
+        val rc = statement.executeQuery("SELECT * FROM  \"$tableName\"")
 
         val columnCount = rc.metaData.columnCount
 
@@ -267,6 +265,12 @@ object DatabaseController : IDatabaseController() {
                 "jdbc:oracle:thin:@localhost:1521:orcl",
                 username,
                 password)
+    }
+
+    fun createTableWithQuery(query : String) {
+        val statement = connection?.createStatement() ?: throw NoConnectionException()
+
+        statement.execute(query)
     }
 
 }
