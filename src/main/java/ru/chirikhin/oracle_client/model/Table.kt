@@ -3,10 +3,11 @@ package ru.chirikhin.oracle_client.model
 import ru.chirikhin.oracle_client.database.Constraint
 
 
-class Table {
+class Table(nameOfTable: String) {
     private var rows : ArrayList<ArrayList<String>>? = ArrayList()
     private val columns: HashMap<String, Column> = HashMap()
     private var constraints : HashMap<String, Constraint> = HashMap()
+    var name : String = nameOfTable
 
     fun addColumn(name : String, column: Column) {
         columns.put(name, column)
@@ -48,5 +49,9 @@ class Table {
 
     fun clearConstraints() {
         constraints.clear()
+    }
+
+    override fun toString(): String {
+        return name
     }
 }

@@ -1,6 +1,7 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.geometry.Orientation
+import javafx.scene.control.ComboBox
 import javafx.scene.layout.VBox
 import ru.chirikhin.oracle_client.database.Constraint
 import ru.chirikhin.oracle_client.model.Column
@@ -18,6 +19,8 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
     private val columnSettings = ArrayList<Column>().observable()
     private val constraints = ArrayList<Constraint>().observable()
 
+    private var tablespaceComboBox: ComboBox<String> by singleAssign()
+
     init {
         with(root) {
             title = "Add new table"
@@ -26,7 +29,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                     labelPosition = Orientation.VERTICAL
                     vbox {
                         field(TABLESPACE) {
-                            combobox <String> {
+                            tablespaceComboBox = combobox <String> {
                                 items = databaseRepresentation.getTablespaces().observable()
                                 selectionModel.select(0)
                             }
@@ -91,8 +94,11 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                                 }
                             }
 
-                            button ("Add foreign key") {
-
+                            button("Add foreign key") {
+                                action {
+                                    val tablespaceName = tablespaceComboBox.selectedItem ?: return@action
+                                    AddForeignKeyView(columnSettings, databaseRepresentation, tablespaceName).openModal(resizable = false)
+                                }
                             }
                         }
                     }

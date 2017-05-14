@@ -2,17 +2,17 @@ package ru.chirikhin.oracle_client.model
 
 
 class DatabaseRepresentation {
-    val tablespaces : HashMap<String, HashMap<String, Table?>?> = HashMap()
+    val tablespaces : HashMap<String, HashMap<String, Table>?> = HashMap()
 
     fun addTablespaces(tablespaces: Collection<String>) {
         tablespaces.forEach {
-            this.tablespaces.put(it, HashMap<String, Table?>())
+            this.tablespaces.put(it, HashMap<String, Table>())
         }
     }
 
     fun addTables(tablespace: String, tables: Collection<String>) {
         tables.forEach {
-            tablespaces[tablespace]?.put(it, Table()) ?: NoSuchTablespaceException()
+            tablespaces[tablespace]?.put(it, Table(it)) ?: NoSuchTablespaceException()
         }
     }
 
@@ -33,7 +33,7 @@ class DatabaseRepresentation {
         return tablespaces.keys.toTypedArray().asList()
     }
 
-    fun getTables(tablespace : String) : HashMap<String, Table?> {
+    fun getTables(tablespace : String) : HashMap<String, Table> {
         return tablespaces[tablespace] ?: throw NoSuchTablespaceException()
     }
 
@@ -41,7 +41,7 @@ class DatabaseRepresentation {
         return getTables(tablespace).get(nameOfTable) ?: throw NoSuchTableException()
     }
 
-    fun getColumnNames(tablespace: String, tableName : String) : List<String>? {
-        return getTables(tablespace).get(tableName)?.getColumnNames()
+    fun getColumnNames(tablespace: String, tableName : String) : List<String> {
+        return getTables(tablespace)[tableName]?.getColumnNames() ?: throw NoSuchTableException()
     }
 }
