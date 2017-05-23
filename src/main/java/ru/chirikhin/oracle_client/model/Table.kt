@@ -43,7 +43,10 @@ class Table(nameOfTable: String) {
     }
 
     fun getColumnNames() : List<String> {
-        return columns.keys.toList()
+        println(columns.keys)
+        val keys = columns.keys
+        val keysList = keys.toList()
+        return keysList
     }
 
     fun setRows(rows : ArrayList<ArrayList<String>>?) {
@@ -59,9 +62,8 @@ class Table(nameOfTable: String) {
     }
 
     fun setConstraints(constraints: ObservableList<Constraint>) {
-        val constraintsMap : HashMap<String, Constraint> = HashMap()
         constraints.forEach {
-            constraintsMap.put(it.name, it)
+            this.constraints.put(it.name, it)
         }
     }
 }

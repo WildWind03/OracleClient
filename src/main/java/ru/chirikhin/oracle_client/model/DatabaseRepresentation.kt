@@ -1,5 +1,8 @@
 package ru.chirikhin.oracle_client.model
 
+import tornadofx.observable
+import java.util.*
+
 
 class DatabaseRepresentation {
     private val tablespaces : HashMap<String, HashMap<String, Table>?> = HashMap()
@@ -11,12 +14,17 @@ class DatabaseRepresentation {
     }
 
     fun addTable(tablespace: String, table : Table) {
-        tablespaces[tablespace]?.put(table.name, table) ?: throw NoSuchTablespaceException()
+        val myTablespace = tablespaces[tablespace]
+        if (null != myTablespace) {
+            myTablespace.put(table.name, table)
+        } else {
+            throw NoSuchTablespaceException()
+        }
     }
 
     fun addTables(tablespace: String, tables: Collection<String>) {
         tables.forEach {
-            tablespaces[tablespace]?.put(it, Table(it)) ?: NoSuchTablespaceException()
+            addTable(tablespace, Table(it))
         }
     }
 
@@ -46,6 +54,13 @@ class DatabaseRepresentation {
     }
 
     fun getColumnNames(tablespace: String, tableName : String) : List<String> {
-        return getTables(tablespace)[tableName]?.getColumnNames() ?: throw NoSuchTableException()
+        val tables = getTables(tablespace)
+        val table = tables.get(tableName)
+        if (null == table) {
+            throw NoSuchTableException()
+        }
+
+        return table.getColumnNames()
+        //return getTables(tablespace)[tableName]?.getColumnNames() ?: throw NoSuchTableException()
     }
 }

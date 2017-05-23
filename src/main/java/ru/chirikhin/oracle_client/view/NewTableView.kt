@@ -15,7 +15,12 @@ import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.util.*
 
-class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
+class NewTableView(val databaseRepresentation: DatabaseRepresentation,
+                   val onNewTableAdded: StringRunnable) : View() {
+    abstract class StringRunnable {
+        abstract fun run(tablespaceName : String, tableName : String)
+    }
+
     override val root = VBox()
 
     private val TABLESPACE_LABEL = "Tablespace"
@@ -133,10 +138,14 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                             databaseRepresentation.addTable(tablespaceComboBox.value,
                                     Table(tableNameTextField.text).apply {
                                         setConstraints(constraints)
+                                        setColumns(columnSettings)
                                     })
+
+                            onNewTableAdded.run(tablespaceComboBox.value, tableNameTextField.text)
+
                             close()
                         } catch (e: Exception) {
-                            showSQLInternalError(e.message ?: "No reason")
+                            showSQLInternalError(e.message ?: e.toString())
                         }
                     }
                 }

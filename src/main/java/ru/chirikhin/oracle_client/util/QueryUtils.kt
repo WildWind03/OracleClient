@@ -7,6 +7,10 @@ class CreateQueryException(reason : String) : Exception(reason)
 
 fun createNewTableQueryFromData(tablespace : String, tableName : String, columns : List<Column>,
                                 constraints : List<Constraint>) : String {
+    if (columns.isEmpty()) {
+        throw CreateQueryException("A table must contain one column at least")
+    }
+
     val query : StringBuilder = StringBuilder()
 
     query.append("CREATE TABLE \"$tableName\" (")
@@ -41,10 +45,12 @@ fun createNewTableQueryFromData(tablespace : String, tableName : String, columns
 
     val lastCommaIndex = query.lastIndexOf(",")
 
-    if (-1 == lastCommaIndex) {
-        throw CreateQueryException("Invalid table")
+    if (-1 != lastCommaIndex) {
+        query.replace(lastCommaIndex, lastCommaIndex + 1, "")
     }
 
-    val readyQuery = query.replace(lastCommaIndex, lastCommaIndex + 1, "").toString()
+    val readyQuery = query.toString()
+
+    println(readyQuery)
     return readyQuery
 }

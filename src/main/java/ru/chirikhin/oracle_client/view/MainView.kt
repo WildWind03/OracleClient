@@ -1,15 +1,18 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.beans.property.ReadOnlyObjectWrapper
-import javafx.scene.control.TableView
-import javafx.scene.control.TreeItem
+import javafx.scene.control.*
 import javafx.scene.layout.BorderPane
+import javafx.util.Callback
 import ru.chirikhin.oracle_client.database.Constraint
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.model.NoSuchTablespaceException
 import ru.chirikhin.oracle_client.util.showSQLInternalError
+import sun.plugin2.jvm.RemoteJVMLauncher
 import tornadofx.*
+import tornadofx.Stylesheet.Companion.cell
+import tornadofx.Stylesheet.Companion.tab
 import java.sql.SQLException
 
 
@@ -25,6 +28,8 @@ class MainView : View() {
 
     private val databaseController = DatabaseController
 
+    private var tablespaceItem : TreeItem<String> by singleAssign()
+
     init {
         title = MAIN_VIEW_TITLE
 
@@ -37,7 +42,18 @@ class MainView : View() {
                 menu("Table") {
                     item(ADD_NEW_ITEM) {
                         setOnAction {
-                            NewTableView(databaseRepresentation).openModal(resizable = false)
+                            NewTableView(databaseRepresentation, object : NewTableView.StringRunnable() {
+                                override fun run(tablespaceName: String, tableName: String){
+                                    tablespaceItem.children.apply {
+                                        forEach {
+                                            if (it.value == tablespaceName) {
+                                                it.children.add(TreeItem(tableName))
+                                                return@forEach
+                                            }
+                                        }
+                                    }
+                                }
+                            }).openModal(resizable = false)
                         }
                     }
 
@@ -52,7 +68,7 @@ class MainView : View() {
                     val treeItem = newValue
 
                     try {
-                        if (newValue.isLeaf) {
+                        if (newValue.isLeaf && newValue.parent.value != TABLESPACES && newValue.value != TABLESPACES) {
                             val types = databaseRepresentation.getColumnNames(newValue.parent.value,
                                     treeItem.value)
 
@@ -69,6 +85,8 @@ class MainView : View() {
                             } else {
                                 tableView = null
                             }
+                        } else {
+                            tableView = null
                         }
                     } catch (e : SQLException) {
                         showSQLInternalError(e.localizedMessage)
@@ -78,7 +96,10 @@ class MainView : View() {
                     center = tableView
                 }
 
-                root = TreeItem(TABLESPACES)
+                tablespaceItem = TreeItem(TABLESPACES)
+                root = tablespaceItem
+
+
 
                 try {
                     val tablespaces = databaseController.getTablespaces()
