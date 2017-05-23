@@ -1,6 +1,5 @@
 package ru.chirikhin.oracle_client.model
 
-import tornadofx.observable
 import java.util.*
 
 
@@ -50,17 +49,13 @@ class DatabaseRepresentation {
     }
 
     fun getTable(tablespace : String, nameOfTable : String) : Table {
-        return getTables(tablespace).get(nameOfTable) ?: throw NoSuchTableException()
+        return getTables(tablespace)[nameOfTable] ?: throw NoSuchTableException()
     }
 
     fun getColumnNames(tablespace: String, tableName : String) : List<String> {
         val tables = getTables(tablespace)
-        val table = tables.get(tableName)
-        if (null == table) {
-            throw NoSuchTableException()
-        }
+        val table = tables[tableName] ?: throw NoSuchTableException()
 
         return table.getColumnNames()
-        //return getTables(tablespace)[tableName]?.getColumnNames() ?: throw NoSuchTableException()
     }
 }

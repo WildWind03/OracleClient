@@ -18,7 +18,7 @@ fun createNewTableQueryFromData(tablespace : String, tableName : String, columns
     for (i in 0..columns.size - 1) {
         query.append("\"${columns[i].name}\" ${columns[i].type} ")
         if (columns[i].isNotNull) {
-            query.append("NOT NULL");
+            query.append("NOT NULL")
         }
 
         query.append(",")

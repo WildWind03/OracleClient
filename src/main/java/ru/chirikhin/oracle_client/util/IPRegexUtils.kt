@@ -6,5 +6,5 @@ fun getIpRegex(): String {
 }
 
 fun getPortRegex(): String {
-    return "\\d*";
+    return "\\d*"
 }

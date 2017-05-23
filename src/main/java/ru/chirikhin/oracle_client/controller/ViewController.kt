@@ -6,7 +6,6 @@ import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.util.showAlert
 import ru.chirikhin.oracle_client.view.ChangeLayoutEvent
 import ru.chirikhin.oracle_client.view.EventLogin
-import ru.chirikhin.oracle_client.view.MainView
 import ru.chirikhin.oracle_client.view.ProgressIndicatorView
 import tornadofx.Controller
 import tornadofx.ViewTransition

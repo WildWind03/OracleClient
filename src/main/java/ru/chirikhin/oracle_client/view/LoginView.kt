@@ -26,8 +26,8 @@ class LoginView : View() {
     private val PASSWORD = "Password"
     private val IP = "IP"
     private val PORT = "Port"
-    private val MIN_HEIGHT = 280;
-    private val MIN_WIDTH = 340;
+    private val MIN_HEIGHT = 280
+    private val MIN_WIDTH = 340
 
     private var signInButton : Button by singleAssign()
     private var ipTextField : TextField by singleAssign()
