@@ -24,12 +24,21 @@ fun createNewTableQueryFromData(tablespace : String, tableName : String, columns
         query.append(",")
     }
 
+    constraints.filter {it is Constraint.PrimaryKey}.run {
+        val primaryKeyConstraintBuilder : StringBuilder = StringBuilder()
+        primaryKeyConstraintBuilder.append("CONSTRAINT \"${this[0].name}\" PRIMARY KEY (")
+        forEach {
+            primaryKeyConstraintBuilder.append("\"${(it as Constraint.PrimaryKey).columnName}\",")
+        }
+
+        primaryKeyConstraintBuilder.replace(primaryKeyConstraintBuilder.length - 1, primaryKeyConstraintBuilder.length, "")
+        primaryKeyConstraintBuilder.append("),")
+        println(primaryKeyConstraintBuilder.toString())
+        query.append(primaryKeyConstraintBuilder.toString())
+    }
+
     constraints.forEach {
         when(it) {
-            is Constraint.PrimaryKey -> {
-                query.append("CONSTRAINT \"${it.name}\" PRIMARY KEY (\"${it.columnName}\"),")
-            }
-
             is Constraint.ForeignKey -> {
                 query.append("CONSTRAINT \"${it.name}\" FOREIGN KEY (\"${it.srcColumn}\")" +
                         " REFERENCES \"${it.destTable}\"(\"${it.destColumn}\"),")

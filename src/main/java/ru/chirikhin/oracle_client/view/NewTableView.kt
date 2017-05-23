@@ -33,6 +33,8 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
     private var tablespaceComboBox: ComboBox<String> by singleAssign()
     private var tableNameTextField: TextField by singleAssign()
 
+    private val DEFAULT_PRIMARY_KEY_CONSTRAINT_NAME = "PK_CONSTRAINT"
+
     init {
         with(root) {
             title = "Add new table"
@@ -100,7 +102,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
                                             constraints.add(Constraint.PrimaryKey(name, columnName))
                                         }
 
-                                    }, "Add primary key", false, "PK_CONSTRAINT").openModal(resizable = false)
+                                    }, "Add primary key", false, DEFAULT_PRIMARY_KEY_CONSTRAINT_NAME).openModal(resizable = false)
                                 }
                             }
 
