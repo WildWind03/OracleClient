@@ -10,7 +10,9 @@ import ru.chirikhin.oracle_client.util.showAlert
 import tornadofx.*
 
 class AddConstraintView(columns: ObservableList<Column>,
-                        val runnable: AddConstraintRunnable, title: String?) : View(title) {
+                        val runnable: AddConstraintRunnable, title: String?,
+                        isWithEditableName: Boolean = true,
+                        val EXAMPLE_CONSTRAINT_NAME: String = "Constraint1") : View(title) {
 
     abstract class AddConstraintRunnable {
         abstract fun run(name : String, columnName : String)
@@ -19,7 +21,6 @@ class AddConstraintView(columns: ObservableList<Column>,
     override val root = FlowPane()
     private var nameTextField : TextField by singleAssign()
     private var columnComboBox : ComboBox<Column> by singleAssign()
-    private val EXAMPLE_CONSTRAINT_NAME = "Constraint1"
 
     init {
         form {
@@ -27,6 +28,7 @@ class AddConstraintView(columns: ObservableList<Column>,
                 field("Name") {
                     nameTextField = textfield {
                         text = EXAMPLE_CONSTRAINT_NAME
+                        isDisable = !isWithEditableName
                     }
                 }
 

@@ -43,7 +43,6 @@ class Table(nameOfTable: String) {
     }
 
     fun getColumnNames() : List<String> {
-        println(columns.keys)
         val keys = columns.keys
         val keysList = keys.toList()
         return keysList

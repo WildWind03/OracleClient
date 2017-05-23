@@ -51,6 +51,5 @@ fun createNewTableQueryFromData(tablespace : String, tableName : String, columns
 
     val readyQuery = query.toString()
 
-    println(readyQuery)
     return readyQuery
 }

@@ -100,7 +100,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
                                             constraints.add(Constraint.PrimaryKey(name, columnName))
                                         }
 
-                                    }, "Add primary key").openModal(resizable = false)
+                                    }, "Add primary key", false, "PK_CONSTRAINT").openModal(resizable = false)
                                 }
                             }
 
