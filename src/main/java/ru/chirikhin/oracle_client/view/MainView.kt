@@ -1,9 +1,7 @@
 package ru.chirikhin.oracle_client.view
 
-import com.sun.javafx.collections.ObservableListWrapper
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.collections.ObservableList
-import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
@@ -14,19 +12,18 @@ import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.sql.SQLException
 import java.util.*
+import javax.swing.tree.TreeNode
 
 
 class MainView : View() {
     override val root = BorderPane()
 
     private var tableView: TableView<List<String>>? = null
-    private val databaseRepresentation : DatabaseRepresentation = DatabaseRepresentation()
+    val databaseRepresentation : DatabaseRepresentation by params
 
     private val MAIN_VIEW_TITLE = "Oracle Client"
     private val TABLESPACES = "Tablespaces"
     private val ADD_NEW_ITEM = "Add new table"
-
-    private val databaseController = DatabaseController
 
     private var tablespaceItem : TreeItem<String> by singleAssign()
 
@@ -75,6 +72,7 @@ class MainView : View() {
                         }
                     }
                 }
+
                 selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                     val treeItem = newValue
 
@@ -85,7 +83,8 @@ class MainView : View() {
 
                             if (types.isNotEmpty()) {
                                 tableView = TableView<List<String>>().apply {
-                                    items = databaseController.getRecords(treeItem.value).observable()
+                                    items = databaseRepresentation.getRecords(treeItem.value).observable()
+
                                     for (k in 0..types.size - 1) {
                                         column<List<String>, String>(types[k]) {
                                             ReadOnlyObjectWrapper(it.value[k])
@@ -109,40 +108,13 @@ class MainView : View() {
                 tablespaceItem = TreeItem(TABLESPACES)
                 root = tablespaceItem
 
-
-
-                try {
-                    val tablespaces = databaseController.getTablespaces()
-                    databaseRepresentation.addTablespaces(tablespaces)
-
-                    for (tablespace in tablespaces) {
-                        val tablespaceItem = TreeItem(tablespace)
-                        root.children.add(tablespaceItem)
-
-                        val tables = databaseController.getTableNames(tablespace)
-                        databaseRepresentation.addTables(tablespace, tables)
-
-                        val constraints = databaseController.getConstraints(tables)
-
-                        tables.forEach {
-                            val tableConstraints = constraints[it]
-                            val constraintMap = HashMap<String, Constraint>()
-                            tableConstraints?.forEach { constraintMap.put(it.name, it) }
-                            databaseRepresentation.getTable(tablespace, it).setConstraints(constraintMap)
-
-                            val columns = databaseController.getColumns(it)
-                            databaseRepresentation.getTable(tablespace, it).setColumns(columns)
-                        }
-
-                        tablespaceItem.children.apply {
-                            tables.forEach {
-                                add(TreeItem(it))
-                            }
-                        }
+                root.children.bind(databaseRepresentation.getTablespaces().observable(), {
+                    TreeItem(it).apply {
+                        children.bind(databaseRepresentation.getTables(it).observable(), {
+                            TreeItem(it.name)
+                        })
                     }
-                } catch (e : SQLException) {
-                    showSQLInternalError(e.localizedMessage)
-                }
+                })
             }
         }
     }

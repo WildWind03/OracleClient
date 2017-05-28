@@ -40,7 +40,7 @@ class AddForeignKeyView(columnSettings: ObservableList<Column>, constraints : Ob
 
                 field("Ref table") {
                     destTableComboBox = combobox {
-                        items = databaseRepresentation.getTables(tablespace).values.toList().observable()
+                        items = databaseRepresentation.getTables(tablespace)
                         setOnAction {
                             val refTableName = selectedItem ?: return@setOnAction
                             destColumnComboBox.items = databaseRepresentation.getColumnNames(tablespace, refTableName.name).observable()

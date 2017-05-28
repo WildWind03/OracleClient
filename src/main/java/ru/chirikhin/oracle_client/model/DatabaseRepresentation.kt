@@ -4,22 +4,27 @@ import com.sun.javafx.collections.ObservableMapWrapper
 import javafx.collections.ObservableList
 import javafx.collections.ObservableMap
 import tornadofx.observable
-import java.util.*
 
 
-class DatabaseRepresentation {
-    private val tablespaces : HashMap<String, HashMap<String, Table>?> = HashMap()
+abstract class DatabaseRepresentation {
+    private val tablespaces : ObservableMap<String, ObservableList<Table>>
+            = ObservableMapWrapper<String, ObservableList<Table>> (HashMap())
 
     fun addTablespaces(tablespaces: Collection<String>) {
         tablespaces.forEach {
-            this.tablespaces.put(it, HashMap<String, Table>())
+            this.tablespaces.put(it, ArrayList<Table>().observable())
         }
     }
 
+    abstract fun getRecords(tableName: String): List<List<String>>
+
     fun deleteTable(tablespace: String, nameOfTable : String) {
-        val myTablespace = tablespaces[tablespace]
-        if (null != myTablespace) {
-            myTablespace.remove(nameOfTable)
+        val tablesOfCurrentTablespace = tablespaces[tablespace]
+
+        if (null != tablesOfCurrentTablespace) {
+            tablesOfCurrentTablespace.removeIf {
+                it.name == nameOfTable
+            }
         } else {
             throw NoSuchTablespaceException()
         }
@@ -28,7 +33,7 @@ class DatabaseRepresentation {
     fun addTable(tablespace: String, table : Table) {
         val myTablespace = tablespaces[tablespace]
         if (null != myTablespace) {
-            myTablespace.put(table.name, table)
+            myTablespace.add(table)
         } else {
             throw NoSuchTablespaceException()
         }
@@ -57,22 +62,23 @@ class DatabaseRepresentation {
         return tablespaces.keys.toTypedArray().asList()
     }
 
-    private fun getTablesMap(tablespace : String) : HashMap<String, Table> {
+   fun getTables(tablespace : String) : ObservableList<Table> {
         return tablespaces[tablespace] ?: throw NoSuchTablespaceException()
     }
 
-    fun getTables(tablespace: String) : ObservableMap<String, Table> {
-        return ObservableMapWrapper<String, Table> (getTablesMap(tablespace))
-    }
-
     fun getTable(tablespace : String, nameOfTable : String) : Table {
-        return getTablesMap(tablespace)[nameOfTable] ?: throw NoSuchTableException()
+        val tables = getTables(tablespace)
+
+        tables.forEach {
+            if (it.name == nameOfTable) {
+                return it
+            }
+        }
+
+        throw NoSuchTableException()
     }
 
     fun getColumnNames(tablespace: String, tableName : String) : List<String> {
-        val tables = getTablesMap(tablespace)
-        val table = tables[tableName] ?: throw NoSuchTableException()
-
-        return table.getColumnNames()
+        return  getTable(tablespace, tableName).getColumnNames()
     }
 }

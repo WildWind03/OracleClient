@@ -19,9 +19,11 @@ class ProgressIndicatorView : View() {
             add(ProgressIndicator())
         }
 
-        subscribe<ChangeLayoutEvent> {
+        subscribe<EventLoginSuccess> {
             Platform.runLater({
-                replaceWith(MainView::class, ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
+                replaceWith(find<MainView>
+                (mapOf(MainView::databaseRepresentation to it.databaseRepresentation)),
+                        ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
             })
         }
 
