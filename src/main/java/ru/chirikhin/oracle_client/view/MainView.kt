@@ -62,7 +62,7 @@ class MainView : View() {
                         action {
                             val selectedItem = selectionModel.selectedItem
                             if (selectedItem.isLeaf && selectedItem.parent.value != TABLESPACES) {
-                                println("delete ${selectedItem.value}")
+                                databaseRepresentation.deleteTable(selectedItem.parent.value, selectedItem.value)
                             }
                         }
                     }
@@ -105,7 +105,7 @@ class MainView : View() {
 
                 root.children.bind(databaseRepresentation.getTablespaces().observable(), {
                     TreeItem(it).apply {
-                        children.bind(databaseRepresentation.getTables(it).observable(), {
+                        children.bind(databaseRepresentation.getTables(it), {
                             TreeItem(it.name)
                         })
                     }

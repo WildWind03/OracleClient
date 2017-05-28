@@ -28,7 +28,11 @@ abstract class DatabaseRepresentation {
         } else {
             throw NoSuchTablespaceException()
         }
+
+        deleteTableInDatabase(nameOfTable)
     }
+
+    abstract fun deleteTableInDatabase(nameOfTable: String)
 
     fun addTable(tablespace: String, table : Table) {
         val myTablespace = tablespaces[tablespace]

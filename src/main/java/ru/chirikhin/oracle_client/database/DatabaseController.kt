@@ -208,4 +208,8 @@ object DatabaseController : IDatabaseController() {
         statement.execute(query)
     }
 
+    fun deleteTable(nameOfTable: String) {
+        executeQuery("DROP TABLE \"$nameOfTable\"")
+    }
+
 }

@@ -28,6 +28,10 @@ class ViewController : Controller() {
                     databaseController.connect(it.ip, it.port, it.username, it.password)
 
                     val databaseRepresentation = object : DatabaseRepresentation() {
+                        override fun deleteTableInDatabase(nameOfTable: String) {
+                            databaseController.deleteTable(nameOfTable)
+                        }
+
                         override fun getRecords(tableName: String): List<List<String>> {
                             return databaseController.getRecords(tableName)
                         }
