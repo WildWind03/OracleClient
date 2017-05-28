@@ -1,6 +1,8 @@
 package ru.chirikhin.oracle_client.view
 
+import com.sun.javafx.collections.ObservableListWrapper
 import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
@@ -67,11 +69,23 @@ class MainView : View() {
 
                             if (types.isNotEmpty()) {
                                 tableView = TableView<List<String>>().apply {
-                                    items = databaseRepresentation.getRecords(treeItem.value).observable()
+                                    val tableViewItems = databaseRepresentation.getRecords(treeItem.value).observable()
+                                    items = tableViewItems
 
                                     for (k in 0..types.size - 1) {
                                         column<List<String>, String>(types[k]) {
                                             ReadOnlyObjectWrapper(it.value[k])
+                                        }
+                                    }
+
+                                    contextmenu {
+                                        item("Delete row") {
+                                            action {
+                                                val selectedRow = selectedItem ?: return@action
+                                                databaseRepresentation.deleteRow(newValue.value, types, selectedRow)
+                                                tableViewItems.remove(selectedRow)
+
+                                            }
                                         }
                                     }
                                 }

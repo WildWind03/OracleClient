@@ -212,4 +212,18 @@ object DatabaseController : IDatabaseController() {
         executeQuery("DROP TABLE \"$nameOfTable\"")
     }
 
+    fun deleteRow(nameOfTable: String, columnNames: List<String>, columnValues: List<String>) {
+        val deleteRowQueryBuilder = StringBuilder()
+        deleteRowQueryBuilder.append("DELETE FROM \"$nameOfTable\" WHERE ")
+
+        for (i in 0..columnNames.size - 1) {
+            deleteRowQueryBuilder.append("${columnNames[i]} = '${columnValues[i]}'")
+            if (i <= columnNames.size - 2) {
+                deleteRowQueryBuilder.append(" AND ")
+            }
+        }
+
+        executeQuery(deleteRowQueryBuilder.toString())
+    }
+
 }

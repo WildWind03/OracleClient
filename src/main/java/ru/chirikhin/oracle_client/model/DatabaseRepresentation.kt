@@ -18,6 +18,8 @@ abstract class DatabaseRepresentation {
 
     abstract fun getRecords(tableName: String): List<List<String>>
 
+    abstract fun deleteRow(nameOfTable: String, columnNames: List<String>, columnValues: List<String>)
+
     fun deleteTable(tablespace: String, nameOfTable : String) {
         val tablesOfCurrentTablespace = tablespaces[tablespace]
 
