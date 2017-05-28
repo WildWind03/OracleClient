@@ -3,6 +3,7 @@ package ru.chirikhin.oracle_client.view
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
+import javafx.scene.control.ListView
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
 import ru.chirikhin.oracle_client.database.Constraint
@@ -32,8 +33,10 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
 
     private var tablespaceComboBox: ComboBox<String> by singleAssign()
     private var tableNameTextField: TextField by singleAssign()
+    private var constraintListView: ListView<Constraint> by singleAssign()
 
-    private val DEFAULT_PRIMARY_KEY_CONSTRAINT_NAME = "PK_CONSTRAINT"
+    private val PK_CONSTRAINT_ADD = "PK_CONSTRAINT"
+    private var primaryKeyConstraintName = "${EXAMPLE_NAME_OF_TABLE}_$PK_CONSTRAINT_ADD"
 
     init {
         with(root) {
@@ -56,6 +59,23 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
                         field(TABLE_NAME_LABEL) {
                             tableNameTextField = textfield {
                                 text = EXAMPLE_NAME_OF_TABLE
+                                textProperty().addListener{
+                                    _, _, newValue ->
+                                    run {
+                                        val oldName = primaryKeyConstraintName
+                                        primaryKeyConstraintName = "${newValue}_$PK_CONSTRAINT_ADD"
+                                        constraints.forEach {
+                                            println(it.name)
+                                            if (it.name == oldName) {
+                                                it.name = primaryKeyConstraintName
+                                            }
+                                        }
+
+                                        constraintListView.refresh()
+
+
+                                    }
+                                }
                             }
                         }
 
@@ -81,7 +101,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
                         }
 
                         field("Constraints") {
-                            listview<Constraint> {
+                            constraintListView = listview<Constraint> {
                                 items = constraints
                                 setPrefSize(500.0, 200.0)
                                 contextmenu {
@@ -102,7 +122,7 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
                                             constraints.add(Constraint.PrimaryKey(name, columnName))
                                         }
 
-                                    }, "Add primary key", false, DEFAULT_PRIMARY_KEY_CONSTRAINT_NAME).openModal(resizable = false)
+                                    }, "Add primary key", false, primaryKeyConstraintName).openModal(resizable = false)
                                 }
                             }
 

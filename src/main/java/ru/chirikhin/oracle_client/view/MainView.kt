@@ -1,18 +1,13 @@
 package ru.chirikhin.oracle_client.view
 
 import javafx.beans.property.ReadOnlyObjectWrapper
-import javafx.collections.ObservableList
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
-import ru.chirikhin.oracle_client.database.Constraint
-import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.sql.SQLException
-import java.util.*
-import javax.swing.tree.TreeNode
 
 
 class MainView : View() {

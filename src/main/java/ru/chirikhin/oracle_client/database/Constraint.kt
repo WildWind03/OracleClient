@@ -1,7 +1,7 @@
 package ru.chirikhin.oracle_client.database
 
 
-sealed class Constraint(val name : String) {
+sealed class Constraint(var name : String) {
     class PrimaryKey(conName : String, val columnName : String) : Constraint(conName) {
         override fun toString(): String {
             return "$name (type: PRIMARY KEY, column: $columnName)"
