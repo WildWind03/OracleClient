@@ -16,8 +16,7 @@ import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.util.*
 
-class NewTableView(val databaseRepresentation: DatabaseRepresentation,
-                   val onNewTableAdded: StringRunnable) : View() {
+class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
     abstract class StringRunnable {
         abstract fun run(tablespaceName : String, tableName : String)
     }
@@ -162,8 +161,6 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation,
                                         setConstraints(constraints)
                                         setColumns(columnSettings)
                                     })
-
-                            onNewTableAdded.run(tablespaceComboBox.value, tableNameTextField.text)
 
                             close()
                         } catch (e: Exception) {

@@ -35,18 +35,7 @@ class MainView : View() {
                 menu("Table") {
                     item(ADD_NEW_ITEM) {
                         setOnAction {
-                            NewTableView(databaseRepresentation, object : NewTableView.StringRunnable() {
-                                override fun run(tablespaceName: String, tableName: String){
-                                    tablespaceItem.children.apply {
-                                        forEach {
-                                            if (it.value == tablespaceName) {
-                                                it.children.add(TreeItem(tableName))
-                                                return@forEach
-                                            }
-                                        }
-                                    }
-                                }
-                            }).openModal(resizable = false)
+                            NewTableView(databaseRepresentation).openModal(resizable = false)
                         }
                     }
 

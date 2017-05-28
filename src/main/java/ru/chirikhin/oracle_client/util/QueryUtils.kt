@@ -24,7 +24,11 @@ fun createNewTableQueryFromData(tablespace : String, tableName : String, columns
         query.append(",")
     }
 
+
     constraints.filter {it is Constraint.PrimaryKey}.run {
+        if (size == 0) {
+            return@run
+        }
         val primaryKeyConstraintBuilder : StringBuilder = StringBuilder()
         primaryKeyConstraintBuilder.append("CONSTRAINT \"${this[0].name}\" PRIMARY KEY (")
         forEach {
