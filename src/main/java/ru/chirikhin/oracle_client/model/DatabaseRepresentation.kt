@@ -1,5 +1,9 @@
 package ru.chirikhin.oracle_client.model
 
+import com.sun.javafx.collections.ObservableMapWrapper
+import javafx.collections.ObservableList
+import javafx.collections.ObservableMap
+import tornadofx.observable
 import java.util.*
 
 
@@ -9,6 +13,15 @@ class DatabaseRepresentation {
     fun addTablespaces(tablespaces: Collection<String>) {
         tablespaces.forEach {
             this.tablespaces.put(it, HashMap<String, Table>())
+        }
+    }
+
+    fun deleteTable(tablespace: String, nameOfTable : String) {
+        val myTablespace = tablespaces[tablespace]
+        if (null != myTablespace) {
+            myTablespace.remove(nameOfTable)
+        } else {
+            throw NoSuchTablespaceException()
         }
     }
 
@@ -44,16 +57,20 @@ class DatabaseRepresentation {
         return tablespaces.keys.toTypedArray().asList()
     }
 
-    fun getTables(tablespace : String) : HashMap<String, Table> {
+    private fun getTablesMap(tablespace : String) : HashMap<String, Table> {
         return tablespaces[tablespace] ?: throw NoSuchTablespaceException()
     }
 
+    fun getTables(tablespace: String) : ObservableMap<String, Table> {
+        return ObservableMapWrapper<String, Table> (getTablesMap(tablespace))
+    }
+
     fun getTable(tablespace : String, nameOfTable : String) : Table {
-        return getTables(tablespace)[nameOfTable] ?: throw NoSuchTableException()
+        return getTablesMap(tablespace)[nameOfTable] ?: throw NoSuchTableException()
     }
 
     fun getColumnNames(tablespace: String, tableName : String) : List<String> {
-        val tables = getTables(tablespace)
+        val tables = getTablesMap(tablespace)
         val table = tables[tableName] ?: throw NoSuchTableException()
 
         return table.getColumnNames()

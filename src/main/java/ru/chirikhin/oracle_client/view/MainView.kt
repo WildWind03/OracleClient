@@ -1,6 +1,9 @@
 package ru.chirikhin.oracle_client.view
 
+import com.sun.javafx.collections.ObservableListWrapper
 import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.collections.ObservableList
+import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
@@ -10,6 +13,7 @@ import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.sql.SQLException
+import java.util.*
 
 
 class MainView : View() {
@@ -31,6 +35,7 @@ class MainView : View() {
 
         with(primaryStage) {
             isMaximized = true
+            isResizable = true
         }
 
         with(root) {
@@ -60,6 +65,16 @@ class MainView : View() {
             }
 
             left = treeview<String> {
+                contextmenu {
+                    item("Drop table") {
+                        action {
+                            val selectedItem = selectionModel.selectedItem
+                            if (selectedItem.isLeaf && selectedItem.parent.value != TABLESPACES) {
+                                println("delete ${selectedItem.value}")
+                            }
+                        }
+                    }
+                }
                 selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                     val treeItem = newValue
 
@@ -71,7 +86,6 @@ class MainView : View() {
                             if (types.isNotEmpty()) {
                                 tableView = TableView<List<String>>().apply {
                                     items = databaseController.getRecords(treeItem.value).observable()
-
                                     for (k in 0..types.size - 1) {
                                         column<List<String>, String>(types[k]) {
                                             ReadOnlyObjectWrapper(it.value[k])
