@@ -279,7 +279,7 @@ object DatabaseController : IDatabaseController() {
     }
 
     fun deleteColumn(nameOfTable: String, columnName: String) {
-        val query = "ALTER TABLE \"$nameOfTable\" DROP COLUMN \"$columnName\""
+        val query = "ALTER TABLE \"$nameOfTable\" DROP COLUMN $columnName"
         executeQuery(query)
     }
 
@@ -305,7 +305,11 @@ object DatabaseController : IDatabaseController() {
     }
 
     fun addNewColumn(nameOfTable: String, column: Column) {
-
+        val query = StringBuilder("ALTER TABLE \"$nameOfTable\" ADD \"${column.name}\" ${column.type} ")
+        if (column.isNotNull) {
+            query.append("NOT NULL")
+        }
+        executeQuery(query.toString())
     }
 
 }

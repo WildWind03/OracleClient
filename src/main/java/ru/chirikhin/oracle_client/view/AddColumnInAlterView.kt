@@ -5,11 +5,11 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.FlowPane
 import ru.chirikhin.oracle_client.model.Column
-import ru.chirikhin.oracle_client.util.showAlert
+import ru.chirikhin.oracle_client.model.Table
 import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 
-class AddColumnInAlterView(columnSettings: ObservableList<Column>, nameOfTable : String) : View() {
+class AddColumnInAlterView(columnSettings: ObservableList<Column>, table : Table) : View() {
     final override val root = FlowPane()
 
     private val EXAMPLE_TYPE = "NUMBER"
@@ -45,8 +45,9 @@ class AddColumnInAlterView(columnSettings: ObservableList<Column>, nameOfTable :
                     action {
                         try {
                             val column = Column(!nullableCheckBox.isSelected, typeTextField.text, nameTextFiled.text)
-                            fire(EventAddNewColumn(nameOfTable, column))
+                            fire(EventAddNewColumn(table.name, column))
                             columnSettings.add(column)
+                            table.setColumns(columnSettings)
                         } catch (e : Exception) {
                             showSQLInternalError(e.toString())
                         }

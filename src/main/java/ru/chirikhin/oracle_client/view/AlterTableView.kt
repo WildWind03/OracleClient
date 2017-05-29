@@ -66,7 +66,7 @@ class AlterTableView(val table: Table, val databaseRepresentation: DatabaseRepre
                             text = "Add column"
 
                             action {
-                                AddColumnInAlterView(columns, table.name).openModal(resizable = false)
+                                AddColumnInAlterView(columns, table).openModal(resizable = false)
                             }
                         }
 
