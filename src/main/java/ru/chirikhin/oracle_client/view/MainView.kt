@@ -1,15 +1,19 @@
 package ru.chirikhin.oracle_client.view
 
 import com.sun.javafx.collections.ObservableListWrapper
-import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.beans.property.*
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
+import javafx.scene.control.TextField
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.sql.SQLException
+import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.control.cell.TextFieldTreeTableCell
+import kotlin.properties.ObservableProperty
 
 
 class MainView : View() {
@@ -64,17 +68,34 @@ class MainView : View() {
 
                     try {
                         if (newValue.isLeaf && newValue.parent.value != TABLESPACES && newValue.value != TABLESPACES) {
-                            val types = databaseRepresentation.getColumnNames(newValue.parent.value,
+                            val columnNames = databaseRepresentation.getColumnNames(newValue.parent.value,
                                     treeItem.value)
 
-                            if (types.isNotEmpty()) {
-                                tableView = TableView<List<String>>().apply {
-                                    val tableViewItems = databaseRepresentation.getRecords(treeItem.value).observable()
-                                    items = tableViewItems
+                            if (columnNames.isNotEmpty()) {
+                                val tableViewItems = databaseRepresentation.getRecords(treeItem.value).observable()
+                                tableView = tableview(tableViewItems) {
+                                    isEditable = true
 
-                                    for (k in 0..types.size - 1) {
-                                        column<List<String>, String>(types[k]) {
-                                            ReadOnlyObjectWrapper(it.value[k])
+                                    var oldValues : List<String>? = null
+
+                                    for (k in 0..columnNames.size - 1) {
+                                        column<List<String>, String?>(columnNames[k]) {
+                                            SimpleObjectProperty(it.value[k])
+                                        }.useTextField().apply {
+                                            setOnEditStart {
+                                                oldValues = it.rowValue
+                                            }
+                                            setOnEditCommit {
+                                                val newValue = it.newValue
+                                                val oldValue = it.oldValue
+                                                val columnNumber = it.tablePosition.column
+
+                                                if (null == newValue) {
+                                                    return@setOnEditCommit
+                                                }
+
+                                                databaseRepresentation.updateRow(oldValues, columnNames, columnNames[columnNumber], newValue, treeItem.value)
+                                            }
                                         }
                                     }
 
@@ -82,7 +103,12 @@ class MainView : View() {
                                         item("Delete row") {
                                             action {
                                                 val selectedRow = selectedItem ?: return@action
-                                                databaseRepresentation.deleteRow(newValue.value, types, selectedRow)
+
+                                                try {
+                                                    databaseRepresentation.deleteRow(newValue.value, columnNames, selectedRow)
+                                                } catch (e : Exception) {
+                                                    showSQLInternalError(e.toString())
+                                                }
                                                 tableViewItems.remove(selectedRow)
 
                                             }

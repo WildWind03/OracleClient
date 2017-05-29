@@ -32,7 +32,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.5'
     compile 'junit:junit:4.7'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    compile 'no.tornado:tornadofx:1.7.2'
+    compile 'no.tornado:tornadofx:1.7.5'
     compile name: 'ojdbc8'
 }
 

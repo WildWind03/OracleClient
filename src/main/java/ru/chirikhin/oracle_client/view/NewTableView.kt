@@ -17,10 +17,6 @@ import tornadofx.*
 import java.util.*
 
 class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
-    abstract class StringRunnable {
-        abstract fun run(tablespaceName : String, tableName : String)
-    }
-
     override val root = VBox()
 
     private val TABLESPACE_LABEL = "Tablespace"

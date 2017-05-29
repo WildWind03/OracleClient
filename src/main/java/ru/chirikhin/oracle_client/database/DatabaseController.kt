@@ -204,7 +204,6 @@ object DatabaseController : IDatabaseController() {
 
     fun executeQuery(query : String) {
         val statement = connection?.createStatement() ?: throw NoConnectionException()
-
         statement.execute(query)
     }
 
@@ -224,6 +223,21 @@ object DatabaseController : IDatabaseController() {
         }
 
         executeQuery(deleteRowQueryBuilder.toString())
+    }
+
+    fun updateRow(oldRowValue: List<String>, columnNames: List<String>, columnName: String, newValue: String, nameOfTable: String) {
+        val updateRowQueryBuilder = StringBuilder()
+        updateRowQueryBuilder.append("UPDATE \"$nameOfTable\" SET $columnName = '$newValue' WHERE ")
+
+        for (i in 0..oldRowValue.size - 1) {
+            updateRowQueryBuilder.append("${columnNames[i]} = '${oldRowValue[i]}'")
+
+            if (i < oldRowValue.size - 1) {
+                updateRowQueryBuilder.append(" AND ")
+            }
+        }
+
+        executeQuery(updateRowQueryBuilder.toString())
     }
 
 }

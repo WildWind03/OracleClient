@@ -28,6 +28,13 @@ class ViewController : Controller() {
                     databaseController.connect(it.ip, it.port, it.username, it.password)
 
                     val databaseRepresentation = object : DatabaseRepresentation() {
+                        override fun updateRow(oldRowValue: List<String>?, columnNames: List<String>, columnName: String, newValue: String, nameOfTable: String) {
+                            if (null == oldRowValue) {
+                                return
+                            }
+                            databaseController.updateRow(oldRowValue, columnNames, columnName, newValue, nameOfTable)
+                        }
+
                         override fun deleteRow(nameOfTable: String, columnNames: List<String>, columnValues: List<String>) {
                             databaseController.deleteRow(nameOfTable, columnNames, columnValues)
                         }
