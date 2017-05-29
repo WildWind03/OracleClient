@@ -5,10 +5,7 @@ import javafx.scene.control.Alert
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showAlert
-import ru.chirikhin.oracle_client.view.EventInsertRow
-import ru.chirikhin.oracle_client.view.EventLoginSuccess
-import ru.chirikhin.oracle_client.view.EventLogin
-import ru.chirikhin.oracle_client.view.ProgressIndicatorView
+import ru.chirikhin.oracle_client.view.*
 import tornadofx.Controller
 import tornadofx.ViewTransition
 import tornadofx.observable
@@ -29,6 +26,7 @@ class ViewController : Controller() {
                     databaseController.connect(it.ip, it.port, it.username, it.password)
 
                     val databaseRepresentation = object : DatabaseRepresentation() {
+
                         override fun updateRow(oldRowValue: List<String>?, columnNames: List<String>, columnName: String, newValue: String, nameOfTable: String) {
                             if (null == oldRowValue) {
                                 return
@@ -77,6 +75,22 @@ class ViewController : Controller() {
 
         subscribe<EventInsertRow> {
             databaseController.insertRow(it.nameOfTable, it.columns)
+        }
+
+        subscribe<EventDeleteColumn> {
+            databaseController.deleteColumn(it.nameOfTable, it.nameOfColumn)
+        }
+
+        subscribe<EventDropConstraint> {
+            databaseController.dropConstraint(it.nameOfTable, it.nameOfConstraint)
+        }
+
+        subscribe<EventAddConstraint> {
+            databaseController.addConstraint(it.nameOfTable, it.constraint)
+        }
+
+        subscribe<EventAddNewColumn> {
+            databaseController.addNewColumn(it.nameOfTable, it.column)
         }
     }
 }

@@ -227,7 +227,7 @@ object DatabaseController : IDatabaseController() {
         deleteRowQueryBuilder.append("DELETE FROM \"$nameOfTable\" WHERE ")
 
         for (i in 0..columnNames.size - 1) {
-            deleteRowQueryBuilder.append("${columnNames[i]} = '${columnValues[i]}'")
+            deleteRowQueryBuilder.append("\"${columnNames[i]}\" = '${columnValues[i]}'")
             if (i <= columnNames.size - 2) {
                 deleteRowQueryBuilder.append(" AND ")
             }
@@ -253,7 +253,7 @@ object DatabaseController : IDatabaseController() {
 
     fun insertRow(nameOfTable: String, rows: Collection<MyColumn>) {
         val insertRowsQueryBuilder = StringBuilder()
-        insertRowsQueryBuilder.append("INSERT INTO $nameOfTable (")
+        insertRowsQueryBuilder.append("INSERT INTO \"$nameOfTable\" (")
 
         for ((index, value) in rows.withIndex()) {
             insertRowsQueryBuilder.append("\"${value.columnName}\"")
@@ -276,6 +276,36 @@ object DatabaseController : IDatabaseController() {
         insertRowsQueryBuilder.append(")")
 
         executeQuery(insertRowsQueryBuilder.toString())
+    }
+
+    fun deleteColumn(nameOfTable: String, columnName: String) {
+        val query = "ALTER TABLE \"$nameOfTable\" DROP COLUMN \"$columnName\""
+        executeQuery(query)
+    }
+
+    fun dropConstraint(nameOfTable: String, constraintName: String) {
+        executeQuery("ALTER TABLE \"$nameOfTable\" DROP CONSTRAINT \"$constraintName\"")
+    }
+
+    fun addConstraint(nameOfTable: String, constraint: Constraint) {
+        when(constraint) {
+            is Constraint.PrimaryKey -> {
+
+            }
+
+            is Constraint.UniqueConstraint -> {
+
+            }
+
+            is Constraint.ForeignKey -> {
+
+            }
+        }
+        //executeQuery()
+    }
+
+    fun addNewColumn(nameOfTable: String, column: Column) {
+
     }
 
 }

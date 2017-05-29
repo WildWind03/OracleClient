@@ -7,7 +7,7 @@ import ru.chirikhin.oracle_client.database.Constraint
 class Table(nameOfTable: String) {
     private var rows : ArrayList<ArrayList<String>>? = ArrayList()
     private val columns: HashMap<String, Column> = HashMap()
-    private var constraints : HashMap<String, Constraint> = HashMap()
+    private var constraints : HashSet<Constraint> = HashSet()
 
     var name : String = nameOfTable
 
@@ -27,19 +27,21 @@ class Table(nameOfTable: String) {
         columns.remove(name)
     }
 
-    fun addConstraint(name : String, constraint: Constraint) {
-        constraints.put(name, constraint)
-    }
+//    fun addConstraint(name : String, constraint: Constraint) {
+//        constraints.put(name, constraint)
+//    }
 
     fun removeConstraint(name : String) {
-        constraints.remove(name)
+        constraints.removeIf {
+            it.name == name
+        }
     }
 
-    fun setConstraints(constraints : HashMap<String, Constraint>) {
-        this.constraints = constraints
-    }
+//    fun setConstraints(constraints : HashMap<String, Constraint>) {
+//        this.constraints = constraints
+//    }
 
-    fun getConstraints() : HashMap<String, Constraint> {
+    fun getConstraints() : HashSet<Constraint> {
         return constraints
     }
 
@@ -70,7 +72,7 @@ class Table(nameOfTable: String) {
 
     fun setConstraints(constraints: ObservableList<Constraint>) {
         constraints.forEach {
-            this.constraints.put(it.name, it)
+            this.constraints.add(it)
         }
     }
 }
