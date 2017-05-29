@@ -15,6 +15,10 @@ class Table(nameOfTable: String) {
         columns.put(name, column)
     }
 
+    fun getColumns() : HashMap<String, Column> {
+        return columns
+    }
+
     fun getColumn(name : String) : Column {
         return columns[name] ?: throw NoSuchColumnException()
     }

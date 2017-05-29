@@ -32,7 +32,7 @@ class AddForeignKeyView(columnSettings: ObservableList<Column>, constraints : Ob
                     }
                 }
 
-                field("Column") {
+                field("MyColumn") {
                     srcColumnComboBox = combobox {
                         items = columnSettings
                     }

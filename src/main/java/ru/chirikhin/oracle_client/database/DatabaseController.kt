@@ -240,4 +240,31 @@ object DatabaseController : IDatabaseController() {
         executeQuery(updateRowQueryBuilder.toString())
     }
 
+    fun insertRow(nameOfTable: String, rows: Collection<MyColumn>) {
+        val insertRowsQueryBuilder = StringBuilder()
+        insertRowsQueryBuilder.append("INSERT INTO $nameOfTable (")
+
+        for ((index, value) in rows.withIndex()) {
+            insertRowsQueryBuilder.append("\"${value.columnName}\"")
+
+            if (index < rows.size - 1) {
+                insertRowsQueryBuilder.append(",")
+            }
+        }
+
+        insertRowsQueryBuilder.append(") VALUES (")
+
+        for ((index, value) in rows.withIndex()) {
+            insertRowsQueryBuilder.append("'${value.columnValue}'")
+
+            if (index < rows.size - 1) {
+                insertRowsQueryBuilder.append(",")
+            }
+        }
+
+        insertRowsQueryBuilder.append(")")
+
+        executeQuery(insertRowsQueryBuilder.toString())
+    }
+
 }

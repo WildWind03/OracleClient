@@ -1,19 +1,13 @@
 package ru.chirikhin.oracle_client.view
 
-import com.sun.javafx.collections.ObservableListWrapper
-import javafx.beans.property.*
-import javafx.scene.control.TableColumn
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.TableView
-import javafx.scene.control.TextField
 import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showSQLInternalError
 import tornadofx.*
 import java.sql.SQLException
-import javafx.scene.control.cell.TextFieldTableCell
-import javafx.scene.control.cell.TextFieldTreeTableCell
-import kotlin.properties.ObservableProperty
 
 
 class MainView : View() {
@@ -51,6 +45,8 @@ class MainView : View() {
                 }
             }
 
+            //val leftTree
+
             left = treeview<String> {
                 contextmenu {
                     item("Drop table") {
@@ -87,7 +83,6 @@ class MainView : View() {
                                             }
                                             setOnEditCommit {
                                                 val newValue = it.newValue
-                                                val oldValue = it.oldValue
                                                 val columnNumber = it.tablePosition.column
 
                                                 if (null == newValue) {
@@ -106,11 +101,17 @@ class MainView : View() {
 
                                                 try {
                                                     databaseRepresentation.deleteRow(newValue.value, columnNames, selectedRow)
+                                                    tableViewItems.remove(selectedRow)
                                                 } catch (e : Exception) {
                                                     showSQLInternalError(e.toString())
                                                 }
-                                                tableViewItems.remove(selectedRow)
+                                            }
+                                        }
 
+                                        item("Insert row") {
+                                            action {
+                                                val columns = databaseRepresentation.getTable(newValue.parent.value, newValue.value).getColumns()
+                                                InsertRowView(columns.values, newValue.value, tableViewItems).openModal(resizable = false)
                                             }
                                         }
                                     }

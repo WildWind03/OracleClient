@@ -5,6 +5,7 @@ import javafx.scene.control.Alert
 import ru.chirikhin.oracle_client.database.DatabaseController
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showAlert
+import ru.chirikhin.oracle_client.view.EventInsertRow
 import ru.chirikhin.oracle_client.view.EventLoginSuccess
 import ru.chirikhin.oracle_client.view.EventLogin
 import ru.chirikhin.oracle_client.view.ProgressIndicatorView
@@ -72,6 +73,10 @@ class ViewController : Controller() {
                     return@subscribe
                 }
             }
+        }
+
+        subscribe<EventInsertRow> {
+            databaseController.insertRow(it.nameOfTable, it.columns)
         }
     }
 }

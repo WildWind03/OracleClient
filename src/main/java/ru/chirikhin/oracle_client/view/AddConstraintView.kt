@@ -32,7 +32,7 @@ class AddConstraintView(columns: ObservableList<Column>,
                     }
                 }
 
-                field("Column") {
+                field("MyColumn") {
                     columnComboBox = combobox {
                         items = columns
                     }
