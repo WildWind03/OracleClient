@@ -17,6 +17,7 @@ import tornadofx.*
 import java.util.*
 
 class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() {
+
     override val root = VBox()
 
     private val TABLESPACE_LABEL = "Tablespace"
@@ -60,15 +61,12 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                                         val oldName = primaryKeyConstraintName
                                         primaryKeyConstraintName = "${newValue}_$PK_CONSTRAINT_ADD"
                                         constraints.forEach {
-                                            println(it.name)
                                             if (it.name == oldName) {
                                                 it.name = primaryKeyConstraintName
                                             }
                                         }
 
                                         constraintListView.refresh()
-
-
                                     }
                                 }
                             }
@@ -165,7 +163,6 @@ class NewTableView(val databaseRepresentation: DatabaseRepresentation) : View() 
                     }
                 }
             }
-
         }
     }
 }

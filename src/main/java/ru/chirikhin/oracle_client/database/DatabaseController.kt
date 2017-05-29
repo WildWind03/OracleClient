@@ -168,9 +168,20 @@ object DatabaseController : IDatabaseController() {
 
     override fun getConstraints(tables : List<String>) : HashMap<String, ArrayList<Constraint>> {
         val constraints = HashMap<String, ArrayList<Constraint>>()
-        constraints.putAll(getForeignKeys(tables))
-        constraints.putAll(getPrimaryKeys(tables))
-        constraints.putAll(getUniqueConstraints(tables))
+
+        val foreignKeys = getForeignKeys(tables)
+        val primaryKeys = getPrimaryKeys(tables)
+        val uniqueKeys = getUniqueConstraints(tables)
+
+        tables.forEach {
+            if (null == constraints[it]) {
+                constraints[it] = ArrayList()
+            }
+
+            constraints[it]?.addAll(foreignKeys[it] ?: ArrayList())
+            constraints[it]?.addAll(primaryKeys[it] ?: ArrayList())
+            constraints[it]?.addAll(uniqueKeys[it] ?: ArrayList())
+        }
 
         return constraints
     }

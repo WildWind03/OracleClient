@@ -45,8 +45,6 @@ class MainView : View() {
                 }
             }
 
-            //val leftTree
-
             left = treeview<String> {
                 contextmenu {
                     item("Drop table") {
@@ -54,6 +52,17 @@ class MainView : View() {
                             val selectedItem = selectionModel.selectedItem
                             if (selectedItem.isLeaf && selectedItem.parent.value != TABLESPACES) {
                                 databaseRepresentation.deleteTable(selectedItem.parent.value, selectedItem.value)
+                            }
+                        }
+                    }
+
+                    item("Alter table") {
+                        action {
+                            val selectedItem = selectionModel.selectedItem
+                            if (selectedItem.isLeaf && selectedItem.parent.value != TABLESPACES) {
+                                //databaseRepresentation.alter(selectedItem.parent.value, selectedItem.value)
+                                AlterTableView(databaseRepresentation.getTable(selectedItem.parent.value,
+                                        selectedItem.value), databaseRepresentation).openModal()
                             }
                         }
                     }

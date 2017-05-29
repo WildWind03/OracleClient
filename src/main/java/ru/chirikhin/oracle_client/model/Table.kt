@@ -39,6 +39,10 @@ class Table(nameOfTable: String) {
         this.constraints = constraints
     }
 
+    fun getConstraints() : HashMap<String, Constraint> {
+        return constraints
+    }
+
     fun setColumns(columns : List<Column>?) {
         this.columns.clear()
         columns?.forEach {
