@@ -27,19 +27,11 @@ class Table(nameOfTable: String) {
         columns.remove(name)
     }
 
-//    fun addConstraint(name : String, constraint: Constraint) {
-//        constraints.put(name, constraint)
-//    }
-
     fun removeConstraint(name : String) {
         constraints.removeIf {
             it.name == name
         }
     }
-
-//    fun setConstraints(constraints : HashMap<String, Constraint>) {
-//        this.constraints = constraints
-//    }
 
     fun getConstraints() : HashSet<Constraint> {
         return constraints

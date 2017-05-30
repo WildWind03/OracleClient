@@ -25,6 +25,7 @@ class AlterTableView(val table: Table, val databaseRepresentation: DatabaseRepre
     private var constraintListView: ListView<Constraint> by singleAssign()
 
     init {
+        primaryKeyConstraintName = "${table.name}_$PK_CONSTRAINT_ADD"
         val columns = ArrayList(table.getColumns().values).observable()
         val constraints = ArrayList(table.getConstraints()).observable()
 
