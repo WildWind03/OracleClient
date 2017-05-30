@@ -11,7 +11,7 @@ import tornadofx.*
 import java.sql.SQLException
 
 
-class MainView : View() {
+class MainView : Fragment() {
     override val root = BorderPane()
 
     private var tableView: TableView<List<String>>? = null
