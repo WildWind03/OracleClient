@@ -334,4 +334,30 @@ object DatabaseController : IDatabaseController() {
         executeQuery(query.toString())
     }
 
+    fun executeSelectQuery(query: String) : ArrayList<ArrayList<String>> {
+        val recordsList : ArrayList<ArrayList<String>> = ArrayList()
+        val statement = connection?.createStatement() ?: throw NoConnectionException()
+
+        val rc = statement.executeQuery(query)
+
+        val columnCount = rc.metaData.columnCount
+
+        val names = ArrayList<String>()
+        (1..columnCount).mapTo(names) {
+            rc.metaData.getColumnName(it)
+        }
+        recordsList.add(names)
+
+        while(rc.next()) {
+            val record : ArrayList<String> = ArrayList()
+            (1..columnCount).mapTo(record) {
+                rc.getString(it) ?: "null"
+            }
+
+            recordsList.add(record)
+        }
+
+        return recordsList
+    }
+
 }

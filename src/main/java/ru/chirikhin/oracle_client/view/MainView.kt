@@ -7,12 +7,11 @@ import javafx.scene.control.TreeItem
 import javafx.scene.layout.BorderPane
 import ru.chirikhin.oracle_client.model.DatabaseRepresentation
 import ru.chirikhin.oracle_client.util.showSQLInternalError
-import sun.reflect.generics.tree.Tree
 import tornadofx.*
 import java.sql.SQLException
 
 
-class MainView : View() {
+class MainView : Fragment() {
     override val root = BorderPane()
 
     private var tableView: TableView<List<String>>? = null
@@ -26,6 +25,8 @@ class MainView : View() {
     private val ADD_NEW_ITEM = "Add new table"
 
     private var tablespaceItem: TreeItem<String> by singleAssign()
+
+    private val OPEN_QUERY_EDITOR = "Open query editor"
 
     init {
         title = MAIN_VIEW_TITLE
@@ -41,6 +42,17 @@ class MainView : View() {
                     item(ADD_NEW_ITEM) {
                         setOnAction {
                             NewTableView(databaseRepresentation).openModal(resizable = false)
+                        }
+                    }
+                    item(OPEN_QUERY_EDITOR) {
+                        setOnAction {
+                            QueryEditorView(object : DatabaseRepresentationRunnable {
+                                override fun run(databaseRepresentation: DatabaseRepresentation) {
+                                    replaceWith(find<MainView>
+                                    (mapOf(MainView::databaseRepresentation to databaseRepresentation)),
+                                            ViewTransition.Slide(0.3.seconds, ViewTransition.Direction.LEFT))
+                                }
+                            }).openModal(resizable = false)
                         }
                     }
                 }

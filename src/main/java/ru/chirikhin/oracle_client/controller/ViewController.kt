@@ -25,46 +25,8 @@ class ViewController : Controller() {
 
                     databaseController.connect(it.ip, it.port, it.username, it.password)
 
-                    val databaseRepresentation = object : DatabaseRepresentation() {
 
-                        override fun updateRow(oldRowValue: List<String>?, columnNames: List<String>, columnName: String, newValue: String, nameOfTable: String) {
-                            if (null == oldRowValue) {
-                                return
-                            }
-                            databaseController.updateRow(oldRowValue, columnNames, columnName, newValue, nameOfTable)
-                        }
-
-                        override fun deleteRow(nameOfTable: String, columnNames: List<String>, columnValues: List<String>) {
-                            databaseController.deleteRow(nameOfTable, columnNames, columnValues)
-                        }
-
-                        override fun deleteTableInDatabase(nameOfTable: String) {
-                            databaseController.deleteTable(nameOfTable)
-                        }
-
-                        override fun getRecords(tableName: String): List<List<String>> {
-                            return databaseController.getRecords(tableName)
-                        }
-
-                    }
-
-                    val tablespaces = databaseController.getTablespaces()
-                    databaseRepresentation.addTablespaces(tablespaces)
-
-                    tablespaces.forEach {
-                        val tables = databaseController.getTableNames(it)
-                        databaseRepresentation.addTables(it, tables)
-                        val constraints = databaseController.getConstraints(tables)
-                        for ((key, value) in constraints) {
-                            databaseRepresentation.getTable(it, key).setConstraints(value.observable())
-                        }
-                        for (table in tables) {
-                            val columns = databaseController.getColumns(table)
-                            databaseRepresentation.getTable(it, table).setColumns(columns)
-                        }
-                    }
-
-                    fire(EventLoginSuccess(databaseRepresentation))
+                    fire(EventLoginSuccess(loadDatabaseRepresentation()))
                 } catch (e: SQLException) {
                     showAlert("Error", "Can not connect to the database", e.message ?:
                             "No additional information", Alert.AlertType.ERROR)
@@ -92,6 +54,73 @@ class ViewController : Controller() {
         subscribe<EventAddNewColumn> {
             databaseController.addNewColumn(it.nameOfTable, it.column)
         }
+
+        subscribe<EventSomeQuery> {
+            try {
+                databaseController.executeQuery(it.query)
+                it.onSuccessAction.run("Successfully executed")
+                it.runnable.run(loadDatabaseRepresentation())
+            } catch (e : Exception) {
+                it.onErrorAction.run(e.toString())
+            }
+        }
+
+        subscribe<EventSelectQuery> {
+            try {
+                val values = databaseController.executeSelectQuery(it.query)
+                val valuesBuilder = StringBuilder()
+
+                values.forEach {
+                    valuesBuilder.append(it.toString() + "\n")
+                }
+                it.onSuccessAction.run(valuesBuilder.toString())
+            } catch (e : Exception) {
+                it.onErrorAction.run(e.toString())
+            }
+        }
+    }
+
+    private fun loadDatabaseRepresentation() : DatabaseRepresentation {
+        val databaseRepresentation = object : DatabaseRepresentation() {
+
+            override fun updateRow(oldRowValue: List<String>?, columnNames: List<String>, columnName: String, newValue: String, nameOfTable: String) {
+                if (null == oldRowValue) {
+                    return
+                }
+                databaseController.updateRow(oldRowValue, columnNames, columnName, newValue, nameOfTable)
+            }
+
+            override fun deleteRow(nameOfTable: String, columnNames: List<String>, columnValues: List<String>) {
+                databaseController.deleteRow(nameOfTable, columnNames, columnValues)
+            }
+
+            override fun deleteTableInDatabase(nameOfTable: String) {
+                databaseController.deleteTable(nameOfTable)
+            }
+
+            override fun getRecords(tableName: String): List<List<String>> {
+                return databaseController.getRecords(tableName)
+            }
+
+        }
+
+        val tablespaces = databaseController.getTablespaces()
+        databaseRepresentation.addTablespaces(tablespaces)
+
+        tablespaces.forEach {
+            val tables = databaseController.getTableNames(it)
+            databaseRepresentation.addTables(it, tables)
+            val constraints = databaseController.getConstraints(tables)
+            for ((key, value) in constraints) {
+                databaseRepresentation.getTable(it, key).setConstraints(value.observable())
+            }
+            for (table in tables) {
+                val columns = databaseController.getColumns(table)
+                databaseRepresentation.getTable(it, table).setColumns(columns)
+            }
+        }
+
+        return databaseRepresentation
     }
 }
 
