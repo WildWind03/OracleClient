@@ -2,7 +2,6 @@ package ru.chirikhin.oracle_client.view
 
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.scene.control.ComboBox
 import javafx.scene.control.ListView
 import javafx.scene.layout.VBox
 import ru.chirikhin.oracle_client.database.Constraint
@@ -14,7 +13,7 @@ import tornadofx.*
 
 
 class AlterTableView(val table: Table, val databaseRepresentation: DatabaseRepresentation,
-                     val afterCloseRunnable : Runnable) : View() {
+                     val afterCloseRunnable : Runnable, val tablespace : String) : View() {
     override val root = VBox()
 
     private val TABLE_NAME_LABEL = "Name of the table"
@@ -24,7 +23,6 @@ class AlterTableView(val table: Table, val databaseRepresentation: DatabaseRepre
     private var primaryKeyConstraintName = "${EXAMPLE_NAME_OF_TABLE}_$PK_CONSTRAINT_ADD"
 
     private var constraintListView: ListView<Constraint> by singleAssign()
-    private var tablespaceComboBox: ComboBox<String> by singleAssign()
 
     init {
         val columns = ArrayList(table.getColumns().values).observable()
@@ -114,15 +112,13 @@ class AlterTableView(val table: Table, val databaseRepresentation: DatabaseRepre
                                             fire(EventAddConstraint(table.name, uniqueConstraint))
                                             constraints.add(uniqueConstraint)
                                         }
-
                                     }, "Add new unique constraint").openModal(resizable = false)
                                 }
                             }
 
                             button("Add foreign key") {
                                 action {
-                                    val tablespaceName = tablespaceComboBox.selectedItem ?: return@action
-                                    AddForeignKeyView(columns, constraints, databaseRepresentation, tablespaceName).openModal(resizable = false)
+                                    AddForeignKeyInAlterView(columns, constraints, databaseRepresentation, tablespace, table.name).openModal(resizable = false)
                                 }
                             }
                         }

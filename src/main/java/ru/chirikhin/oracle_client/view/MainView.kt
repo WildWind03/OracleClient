@@ -137,7 +137,7 @@ class MainView : View() {
                                     if (oldArg1 != null && oldArg3 != null) {
                                         selectAction.invoke(oldArg1!!, oldArg2, oldArg3!!)
                                     }
-                                }).openModal()
+                                }, selectedItem.parent.value).openModal()
 
                             }
                         }

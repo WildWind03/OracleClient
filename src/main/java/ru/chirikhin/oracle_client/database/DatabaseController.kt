@@ -279,7 +279,7 @@ object DatabaseController : IDatabaseController() {
     }
 
     fun deleteColumn(nameOfTable: String, columnName: String) {
-        val query = "ALTER TABLE \"$nameOfTable\" DROP COLUMN $columnName"
+        val query = "ALTER TABLE \"$nameOfTable\" DROP COLUMN \"$columnName\""
         executeQuery(query)
     }
 
@@ -290,18 +290,40 @@ object DatabaseController : IDatabaseController() {
     fun addConstraint(nameOfTable: String, constraint: Constraint) {
         when(constraint) {
             is Constraint.PrimaryKey -> {
+                val primaryKeys = ArrayList(getPrimaryKeys(listOf(nameOfTable))[nameOfTable])
 
+                if (primaryKeys.isNotEmpty()) {
+                    dropConstraint(nameOfTable, constraint.name)
+                }
+
+                primaryKeys.add(constraint)
+                val queryBuilder = StringBuilder()
+
+                queryBuilder.append("ALTER TABLE \"$nameOfTable\" ADD CONSTRAINT \"${constraint.name}\" PRIMARY KEY (")
+
+                for (i in 0..primaryKeys.size - 1) {
+                    val primaryKey : Constraint.PrimaryKey = primaryKeys[i] as Constraint.PrimaryKey
+                    queryBuilder.append("\"${primaryKey.columnName}\"")
+
+                    if (i < primaryKeys.size - 1) {
+                        queryBuilder.append(",")
+                    }
+                }
+
+                queryBuilder.append(")")
+
+                executeQuery(queryBuilder.toString())
             }
 
             is Constraint.UniqueConstraint -> {
-
+                executeQuery("ALTER TABLE \"$nameOfTable\" ADD CONSTRAINT \"${constraint.name}\" UNIQUE (\"${constraint.columnName}\")")
             }
 
             is Constraint.ForeignKey -> {
-
+                executeQuery("ALTER TABLE \"$nameOfTable\" ADD CONSTRAINT \"${constraint.name}\"" +
+                        " FOREIGN KEY (\"${constraint.srcColumn}\") REFERENCES \"${constraint.destTable}\" (\"${constraint.destColumn}\")")
             }
         }
-        //executeQuery()
     }
 
     fun addNewColumn(nameOfTable: String, column: Column) {
