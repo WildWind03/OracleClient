@@ -44,6 +44,10 @@ class Table(nameOfTable: String) {
         }
     }
 
+    fun addConstraint(constraint: Constraint) {
+        constraints.add(constraint)
+    }
+
     fun getColumnNames() : List<String> {
         val keys = columns.keys
         val keysList = keys.toList()

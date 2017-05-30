@@ -100,6 +100,7 @@ class AlterTableView(val table: Table, val databaseRepresentation: DatabaseRepre
                                             val primaryKey = Constraint.PrimaryKey(name, columnName)
                                             fire(EventAddConstraint(table.name, primaryKey))
                                             constraints.add(primaryKey)
+                                            table.addConstraint(primaryKey)
                                         }
                                     }, "Add primary key", false, primaryKeyConstraintName).openModal(resizable = false)
                                 }
